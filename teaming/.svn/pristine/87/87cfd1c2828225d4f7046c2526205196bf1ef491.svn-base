@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.moim.dao.IMoimScheduleDao">
+
+<select id="getScheduleList">
+
+<include refid="common.prePaging"/>
+
+SELECT moim_code
+       , m_schedule_no
+       , m_schedule_title
+       , m_schedule_writer
+       , m_schedule_content
+       , m_schedule_enter
+       , m_schedule_reg_date
+       , m_schedule_mod_date
+       , m_schedule_start_time
+       , m_schedule_end_time
+       , m_schedule_place
+       , m_schedule_enter_max
+FROM moim_schedule
+WHERE moim_code = #{moimCode}
+
+<include refid="common.prePaging"/>
+
+</select>
+
+<select id="getSchedule" parameterType="int" resultType="com.moim.vo.MoimScheduleVO">
+SELECT moim_code
+       , m_schedule_no
+       , m_schedule_title
+       , m_schedule_writer
+       , m_schedule_content
+       , m_schedule_enter
+       , m_schedule_reg_date
+       , m_schedule_mod_date
+       , m_schedule_start_time
+       , m_schedule_end_time
+       , m_schedule_place
+       , m_schedule_enter_max
+FROM moim_schedule
+WHERE moim_code = #{moimCode}
+</select>
+
+<update id="updateSchedule" parameterType="com.moim.vo.MoimScheduleVO">
+
+UPDATE moim_schedule SET
+         m_schedule_title = #{mScheduleTitle}
+       , m_schedule_content = #{mScheduleContent}
+       , m_schedule_mod_date = #{mScheduleModDate}
+       , m_schedule_start_time = #{mScheduleStartTime}
+       , m_schedule_end_time = #{mScheduleEndTime}
+       , m_schedule_place = #{mSchedulePlace}
+       , m_schedule_enter_max = #{mScheduleEnterMax}
+</update>
+
+
+<delete id="deleteSchedule" parameterType="com.moim.vo.MoimScheduleVO">
+ DELETE FROM moim_schedule
+ WHERE m_schedule_no = #{mScheduleNo}
+
+</delete>
+
+<insert id="insertSchedule" parameterType="com.moim.vo.MoimScheduleVO">
+
+<selectKey resultType="int" keyProperty="mScheduleNo" order="BEFORE">
+ SELECT MOIM_SCHEDULE_SEQ.NEXTVAL FROM DUAL 
+</selectKey>  
+
+INSERT INTO moim_schedule VALUES(
+		#{moimCode}, #{mScheduleNo}, #{mScheduleTitle},
+		#{mScheduleWriter}, #{mScheduleContent}, SYSDATE,
+		#{mScheduleModDate}, #{mScheduleStartTime}, #{mScheduleEndTime}, 
+		#{mSchedulePlace}, #{mScheduleEnterMax}
+		)
+		
+</insert>
+ 
+<update id="increaseEnter">
+	UPDATE moim_schedule SET
+	m_schedule_enter = m_schedule_enter + 1
+	WHERE m_schedule_no = #{mScheduleNo}
+</update>
+
+
+<update id="decreaseEnter">
+	UPDATE moim_schedule SET
+	m_schedule_enter = m_schedule_enter - 1
+	WHERE m_schedule_no = #{mScheduleNo}
+
+</update>
+
+</mapper>

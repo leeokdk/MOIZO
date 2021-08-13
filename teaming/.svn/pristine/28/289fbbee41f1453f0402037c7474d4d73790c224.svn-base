@@ -1,0 +1,135 @@
+package com.moim.vo;
+
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
+
+public class UserVO {
+	private String userId;                  /* 유저아이디*/
+	private String userPassword;            /* 비밀번호*/
+	private String userEmail;             /* 카카오정보*/
+	private String localBigCode;            /* 지역 대분류 코드*/
+	private String userIntroduce;           /* 소개글*/
+	private String userName;                /* 이름*/
+	private String userJender;              /* 성별*/
+	private String userAge;                 /* 생년월일*/
+	private String userDelYn;               /* 계정탈퇴여부*/
+	private String userPic;                 /* 프로필사진*/
+	private String localMidCode;            /* 지역 중분류 코드*/
+	private String localSmallCode;          /* 지역 소분류 코드*/
+	
+	
+	// DB에 있는 필드 넣기
+	private String userRole;
+	
+	
+	public String getUserRole() {
+		return userRole;
+	}
+
+	public void setUserRole(String userRole) {
+		this.userRole = userRole;
+	}
+
+	@Override
+	public String toString() {
+		return ToStringBuilder.reflectionToString(this, ToStringStyle.MULTI_LINE_STYLE);
+	}
+
+	public String getUserId() {
+		return userId;
+	}
+
+	public void setUserId(String userId) {
+		this.userId = userId;
+	}
+
+	public String getUserPassword() {
+		return userPassword;
+	}
+
+	public void setUserPassword(String userPassword) {
+		this.userPassword = userPassword;
+	}
+
+
+	public String getUserEmail() {
+		return userEmail;
+	}
+
+	public void setUserEmail(String userEmail) {
+		this.userEmail = userEmail;
+	}
+
+	public String getLocalBigCode() {
+		return localBigCode;
+	}
+
+	public void setLocalBigCode(String localBigCode) {
+		this.localBigCode = localBigCode;
+	}
+
+	public String getUserIntroduce() {
+		return userIntroduce;
+	}
+
+	public void setUserIntroduce(String userIntroduce) {
+		this.userIntroduce = userIntroduce;
+	}
+
+	public String getUserName() {
+		return userName;
+	}
+
+	public void setUserName(String userName) {
+		this.userName = userName;
+	}
+
+	public String getUserJender() {
+		return userJender;
+	}
+
+	public void setUserJender(String userJender) {
+		this.userJender = userJender;
+	}
+
+	public String getUserAge() {
+		return userAge;
+	}
+
+	public void setUserAge(String userAge) {
+		this.userAge = userAge;
+	}
+
+	public String getUserDelYn() {
+		return userDelYn;
+	}
+
+	public void setUserDelYn(String userDelYn) {
+		this.userDelYn = userDelYn;
+	}
+
+	public String getUserPic() {
+		return userPic;
+	}
+
+	public void setUserPic(String userPic) {
+		this.userPic = userPic;
+	}
+
+	public String getLocalMidCode() {
+		return localMidCode;
+	}
+
+	public void setLocalMidCode(String localMidCode) {
+		this.localMidCode = localMidCode;
+	}
+
+	public String getLocalSmallCode() {
+		return localSmallCode;
+	}
+
+	public void setLocalSmallCode(String localSmallCode) {
+		this.localSmallCode = localSmallCode;
+	}
+	
+}

@@ -1,0 +1,117 @@
+package com.moim.web;
+
+import java.util.List;
+
+import javax.inject.Inject;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import com.moim.exception.BizNotEffectedException;
+import com.moim.exception.BizNotFoundException;
+import com.moim.service.IAdminNoticeService;
+import com.moim.service.IMoimService;
+import com.moim.service.IUserService;
+import com.moim.vo.AdminNoticeSearchVO;
+import com.moim.vo.AdminNoticeVO;
+import com.moim.vo.MoimSearchVO;
+import com.moim.vo.MoimVO;
+import com.moim.vo.UserSearchVO;
+import com.moim.vo.UserVO;
+
+/**
+ * 
+ * @author juno
+ *
+ */
+@Controller
+@RequestMapping("/admin")
+public class AdminController {
+	
+	@Inject
+	IAdminNoticeService aNoticeService;
+	
+	@Inject
+	IMoimService moimService;
+	
+	@Inject
+	IUserService userService;
+	
+	private Logger logger = LoggerFactory.getLogger(this.getClass());
+
+	/*			관리자 페이지 통합			 */
+	@RequestMapping("/admin")
+	public String adminList() {
+		return "admin/admin";
+	}
+	
+	
+	/*			속 공지게시판 관리			 */
+	@RequestMapping("/noticeListForAdmin")
+	public String adminNoticeList(@ModelAttribute("searchVO") AdminNoticeSearchVO searchVO, Model model) {
+		logger.debug("searchVO={}", searchVO);
+		model.addAttribute("searchVO", searchVO);
+		List<AdminNoticeVO> aNoticeList = aNoticeService.getBoardList(searchVO);
+		model.addAttribute("aNoticeList", aNoticeList);
+		return "admin/noticeListForAdmin";
+	}
+	
+	/*			속 모임 관리			 */
+	@RequestMapping("/moimList")
+	public String moimList(@ModelAttribute("searchVO") MoimSearchVO searchVO, Model model) {
+		logger.debug("searchVO={}", searchVO);
+		searchVO.setRowSizePerPage(4);
+		model.addAttribute("searchVO", searchVO);
+		List<MoimVO> moimList = moimService.getMoimList(searchVO);
+		model.addAttribute("moimList", moimList);
+		return "admin/moimListForAdmin";
+	}	
+
+	@RequestMapping("/moim/moimDelete")
+	public String removeMoim(RedirectAttributes redirectAttributes, @ModelAttribute("moim") MoimVO moim
+			, Model model) {
+		logger.debug("moimVO={}", moim );
+		try {
+			moimService.removeMoim(moim);
+		} catch (BizNotEffectedException ene) {
+			model.addAttribute("ene",ene);
+		} catch (BizNotFoundException enf) {
+			model.addAttribute("enf",enf);
+		}
+		redirectAttributes.addFlashAttribute("deleteMoimByAdmin", "success");
+		return "redirect:/admin/moimList";
+	}
+	
+	/*			속 유저 관리			 */
+	@RequestMapping("/userDelete")
+	public String userDelete(RedirectAttributes redirectAttributes, @RequestParam("userId") String userId) {
+		UserVO user;
+		try {
+			user = userService.getUser(userId);
+			userService.removeUser(user);
+		} catch (BizNotFoundException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		} catch (BizNotEffectedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		redirectAttributes.addFlashAttribute("deleteUserByAdmin", "success");
+		return "redirect:/admin/userList";
+	}
+	
+	@RequestMapping("/userList")
+	public String userList(@ModelAttribute("searchVO") UserSearchVO searchVO, Model model) {
+		logger.debug("searchVO={}", searchVO);
+		model.addAttribute("searchVO", searchVO);
+		List<UserVO> userList = userService.getUserList(searchVO);
+		model.addAttribute("userList", userList);
+		return "admin/userList";
+	}	
+}

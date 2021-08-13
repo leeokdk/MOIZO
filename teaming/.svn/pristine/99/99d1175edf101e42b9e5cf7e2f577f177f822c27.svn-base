@@ -1,0 +1,14 @@
+@charset "UTF-8";
+
+
+div.container {padding-top: 1%;}
+
+
+
+
+/* table thead tr th {text-align: center;}
+
+.bottom-10 {padding-bottom: 10px;}
+
+.fifth-gray tbody tr:nth-child(5n) {background-color: #f7f7f9;}
+.fifth-primary tbody tr:nth-child(5n) {background-color: #337ab7;} */

@@ -1,0 +1,33 @@
+package com.moim.dao;
+
+import java.util.List;
+
+import org.apache.ibatis.annotations.Mapper;
+
+import com.moim.vo.PagingVO;
+import com.moim.vo.ReplyVO;
+
+/**
+ * 
+ * <b> Reply_Table <b>
+ * 4-4IRF IReplyDao 참조
+ * 
+ * @author 다나
+ * @since 2021.07.14
+ *
+ */
+@Mapper
+public interface IReplyDao {
+
+	public int getReplyCountByParent();
+
+	public List<ReplyVO> getReplyListByParent(PagingVO pagingVO);
+
+	public ReplyVO getReply(int reNo);
+
+	public int insertReply(ReplyVO reply);
+
+	public int updateReply(ReplyVO reply);
+
+	public int deleteReply(ReplyVO reply);
+}

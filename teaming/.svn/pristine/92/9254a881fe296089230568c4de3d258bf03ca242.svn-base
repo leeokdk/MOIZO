@@ -1,0 +1,22 @@
+package com.moim.dao;
+
+import java.util.List;
+
+import org.apache.ibatis.annotations.Mapper;
+
+import com.moim.vo.ScheduleEnterListVO;
+
+/**
+ * 
+ * 일정에 참여한 회원들을 보기만 하는 용도기 때문에 따로 insert, delete, update를 만들지 않음.
+ * 
+ * @author DNA
+ * @since 2021.07.28
+ */
+@Mapper
+public interface IScheduleEnterListDao {
+	public List<ScheduleEnterListVO> getScheduleList();
+
+	public ScheduleEnterListVO getSchedul(int mScheduleNo);
+
+}

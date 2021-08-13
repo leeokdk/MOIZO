@@ -1,0 +1,49 @@
+package com.moim.service.impl;
+
+import javax.inject.Inject;
+
+import org.springframework.stereotype.Service;
+
+import com.moim.dao.ILoginDao;
+import com.moim.dao.IReplyDao;
+import com.moim.dao.IUserDao;
+import com.moim.exception.BizNotEffectedException;
+import com.moim.exception.BizNotFoundException;
+import com.moim.exception.BizPasswordNotMatchedException;
+import com.moim.service.ILoginService;
+import com.moim.vo.LoginVO;
+
+/**
+ * 
+ * <b> Login_Table <b>
+ *
+ * 4-4IRF LoginServiceImpl 참조
+ * 
+ * @author 다나
+ * @since 2021.07.14
+ */
+//@Service
+public class LoginServiceImpl  implements ILoginService{
+
+//	@Inject
+	ILoginDao loginDao;
+
+	// String type으로 바로 주면 joinController에서 user.setRole에 넣을 수 있음
+	@Override
+	public String getUserRole(String id) throws BizNotFoundException {
+		return loginDao.getUserRole(id);
+	}
+
+	@Override
+	public LoginVO getUser(String id) throws BizNotFoundException {
+		return loginDao.getUser(id);
+	}
+
+	// 여기에서 해당 유저권한을 guest로 주어야함. / logindao 써야함. 쿼리문에서 GUEST로 주면 됌.
+	@Override
+	public void registUserRole(LoginVO login) throws BizNotFoundException, BizNotEffectedException {
+		loginDao.insertUserRole(login);
+	}
+
+	
+}

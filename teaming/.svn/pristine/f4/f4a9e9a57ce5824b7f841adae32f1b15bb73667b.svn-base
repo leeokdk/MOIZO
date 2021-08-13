@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.moim.dao.IAdminNoticeDao">
+
+<sql id="search">
+	<if test="@org.apache.commons.lang3.StringUtils@isNotBlank(searchWord)">
+			<choose>
+				<when test='searchType=="T"'>AND a_notice_title LIKE '%' || #{searchWord} || '%'    </when>
+				<when test='searchType=="W"'>AND a_notice_writer LIKE '%' || #{searchWord} || '%'   </when>
+				<when test='searchType=="C"'>AND a_notice_content LIKE '%' || #{searchWord} || '%'  </when>
+			</choose>
+		</if><!--@클래스풀네임@메소드이름(파라미터) -->
+</sql>
+
+<select id="getBoardCount" parameterType="com.moim.vo.AdminNoticeSearchVO" resultType="int">
+	SELECT count(*) FROM admin_notice
+	WHERE 1=1
+	<include refid="search" />
+</select>
+
+<select id="getBoardList" parameterType="com.moim.vo.AdminNoticeSearchVO" resultType="com.moim.vo.AdminNoticeVO">
+
+<include refid="common.prePaging"/>
+	SELECT
+		a_notice_no
+       , a_notice_title
+       , a_notice_writer
+       , a_notice_content
+       , a_notice_hit
+       , to_char(a_notice_reg_date, 'YYYY-MM-DD') AS a_notice_reg_date
+       , to_char(a_notice_mod_date, 'YYYY-MM-DD') AS a_notice_mod_date
+       , a_notice_del_yn
+       , board_code
+       , (SELECT user_name FROM user_table WHERE user_id = admin_notice.a_notice_writer ) AS a_notice_writer_name
+	FROM admin_notice
+<include refid="search" />
+
+ORDER BY a_notice_no
+
+<include refid="common.postPaging"/>
+</select>
+
+<!-- TODO : 게시판 완성 후 파일업로드 등록  -->
+<!--    <resultMap type="com.moim.vo.ManagerNoticeVO" id="ManagerNoticeMap">
+  	<id column="a_notice_no"				property="boNo" />
+  	<result column="m_notice_title" 		property="boTitle" />
+  	<result column="m_notice_writer" 		property="boWriter" />
+  	<result column="m_notice_content" 	property="boContent" />
+  	<result column="m_notice_hit" 		property="boHit" />
+  	<result column="m_notice_reg_date" 	property="boRegDate" />
+  	<result column="m_notice_mod_date" 	property="boModDate" />
+  	<result column="m_notice_del_yn" 		property="boDelYn" />
+  	<collection property="attaches" 
+  				ofType="com.study.attach.vo.AttachVO"
+  				column="{atchParentNo=bo_no, atchCategory=bo_type}" 
+  				select="com.study.attach.dao.IAttachDao.getAttachByParentNoList" />
+  </resultMap>  -->
+<!-- resultMap="ManagerNoticeMap" -->
+<select id="getBoard" parameterType="int" resultType="com.moim.vo.AdminNoticeVO" >
+	SELECT
+		a_notice_no
+       , a_notice_title
+       , a_notice_writer
+       , a_notice_content
+       , a_notice_hit
+       , to_char(a_notice_reg_date, 'YYYY-MM-DD') AS a_notice_reg_date
+       , to_char(a_notice_mod_date, 'YYYY-MM-DD') AS a_notice_mod_date
+       , a_notice_del_yn
+       , board_code
+       , (SELECT user_name FROM user_table WHERE user_id = admin_notice.a_notice_writer ) AS a_notice_writer_name
+	FROM admin_notice
+	WHERE a_notice_no = #{aNoticeNo}
+	
+</select>
+
+<update id="increseHit" parameterType="int">
+	UPDATE admin_notice SET
+	a_notice_hit = a_notice_hit + 1
+	WHERE a_notice_no = #{aNoticeNo}
+
+</update>
+
+<update id="updateBoard" parameterType="com.moim.vo.AdminNoticeVO">
+	UPDATE admin_notice SET
+	a_notice_title = #{aNoticeTitle},
+	a_notice_content = #{aNoticeContent},
+	a_notice_mod_date = SYSDATE
+	WHERE a_notice_no = #{aNoticeNo}
+</update>
+
+<update id="deleteBoard" parameterType="com.moim.vo.AdminNoticeVO">
+	UPDATE admin_notice SET
+	a_notice_del_yn = 'Y'
+	WHERE a_notice_no = #{aNoticeNo}
+</update>
+
+<update id="insertBoard" parameterType="com.moim.vo.AdminNoticeVO">
+
+<selectKey resultType="int" keyProperty="aNoticeNo" order="BEFORE">
+ SELECT ADMIN_NOTICE_SEQ.NEXTVAL FROM DUAL 
+</selectKey>  
+
+INSERT INTO admin_notice VALUES(
+		#{aNoticeNo}, #{aNoticeTitle},
+		'a001', #{aNoticeContent}, 0,
+		sysdate, null, 'N', 'NTAD'
+		)
+</update>
+
+</mapper>

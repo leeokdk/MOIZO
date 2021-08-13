@@ -1,0 +1,232 @@
+package com.moim.web;
+
+import java.util.List;
+
+import javax.inject.Inject;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.http.MediaType;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.ModelAndView;
+
+import com.moim.dao.IHobbyDao;
+import com.moim.dao.ILocationDao;
+import com.moim.exception.BizDuplicateKeyException;
+import com.moim.exception.BizNotEffectedException;
+import com.moim.exception.BizNotFoundException;
+import com.moim.service.IManagerNoticeService;
+import com.moim.service.IMoimService;
+import com.moim.vo.HobbyVO;
+import com.moim.vo.LocationVO;
+import com.moim.vo.ManagerNoticeSearchVO;
+import com.moim.vo.ManagerNoticeVO;
+import com.moim.vo.MoimSearchVO;
+import com.moim.vo.MoimVO;
+
+
+/**
+ * 
+ * @author ok
+ * @since 2021.07.19
+ */
+@Controller
+public class MoimController {
+
+	private Logger logger = LoggerFactory.getLogger(this.getClass());
+
+	@Inject
+	IManagerNoticeService managerNoticeService;
+	
+	@Inject
+	IMoimService moimService;
+	
+	@Inject
+	IHobbyDao hobbyDao;
+	
+	@Inject
+	ILocationDao locationDao;
+	
+	@ModelAttribute("hobbyList")
+	public List<HobbyVO> hobbyList(){
+		List<HobbyVO> hobbyList = hobbyDao.getHobbyCode();
+		return hobbyList;
+	}
+	@ModelAttribute("locationList")
+	public List<LocationVO> locationList(){
+		List<LocationVO> locationList = locationDao.getBigLocation();
+		return locationList;
+	}
+	
+	
+	@RequestMapping("/moim/moimList")
+	public String searchMoim(@ModelAttribute("searchVO") MoimSearchVO searchVO, Model model) {
+		logger.debug("moimSearchVO", searchVO);
+		model.addAttribute("moimSearchVO", searchVO);
+		List<MoimVO> moimList = moimService.getMoimList(searchVO);
+		model.addAttribute("moimList", moimList);
+		return "moim/moimList";
+	}
+
+	@RequestMapping("/moim/moimMake")
+	public String createMoim(@ModelAttribute("moim") MoimVO moim, Model model) {
+		logger.debug("moim", moim);
+		return "moim/moimForm";
+	}
+	
+	@RequestMapping("/moim/moimRegist")
+	public String moimRegist(@ModelAttribute("moim") MoimVO moim
+			,BindingResult errors , Model model) {
+		logger.debug("moimVO={}", moim );
+		if(errors.hasErrors()) {
+			System.out.println("에러났음");
+			return "moim/moimForm";
+		}
+		try {
+			moimService.registMoim(moim);
+		} catch (BizDuplicateKeyException e) {
+			model.addAttribute("e", e);
+			System.out.println("아무튼 소모임 생성 실패");
+		} catch (BizNotEffectedException e) {
+			model.addAttribute("e", e);
+			e.printStackTrace();
+			System.out.println("소모임 생성 실패");
+		}
+		return "/moim/moimList";
+	}
+	
+	/**
+	 * 지역에 따른 중분류(도시)정보를 json으로 리턴 
+	 * @param moim
+	 * @author ok
+	 * @since 2017.07.20
+	 */
+	@RequestMapping(path =  "/moim/locationDetail.ajax", produces= "application/json; charset=UTF-8" )
+	@ResponseBody
+	public List<LocationVO> locationDetail(String bigCode) {
+		logger.debug("bigCode={}", bigCode);
+		List<LocationVO> result =  locationDao.getLocationByParent(bigCode);
+		return result;
+	}
+	
+	@RequestMapping("/moim/moimEdit")
+	public ModelAndView moimEdit(@RequestParam("moimCode") String moimCode) {
+		ModelAndView mav = new ModelAndView();
+		try {
+			MoimVO moim =  moimService.getMoim(moimCode);
+			mav.addObject("moim", moim);
+			mav.setViewName("moim/moimEdit");
+		} catch (BizNotFoundException e) {
+			mav.addObject("e", e);
+		}
+		return mav;
+	}
+	
+	@RequestMapping("/moim/moimModify")
+	public String modifyMoim(@ModelAttribute("moim") MoimVO moim
+			,BindingResult errors , Model model) {
+		logger.debug("moimVO={}", moim );
+		if(errors.hasErrors()) {
+			System.out.println("에러났음");
+			return "moim/moimEdit";
+		}
+		try {
+			moimService.modifyMoim(moim);
+		} catch (BizNotEffectedException e) {
+			model.addAttribute("e",e);
+			e.printStackTrace();
+		} catch (BizNotFoundException e) {
+			model.addAttribute("e",e);
+			e.printStackTrace();
+		}
+		return "moim/moimList";
+	}
+	
+	@RequestMapping("/moim/moimDelete")
+	public String removeMoim(@ModelAttribute("moim") MoimVO moim
+			, Model model) {
+		logger.debug("moimVO={}", moim );
+		try {
+			moimService.removeMoim(moim);
+		} catch (BizNotEffectedException e) {
+			e.printStackTrace();
+		} catch (BizNotFoundException e) {
+			e.printStackTrace();
+		}
+		return "moim/moimList";
+	}
+
+	
+	/**
+	 * 
+	 * @param moimSearchVO
+	 * @param model
+	 * @return
+	 * @author DNA
+	 * @since 2021.07.19
+	 */
+	@RequestMapping("moim/moimView")
+	public String viewMoim(@ModelAttribute("managerNoticeSearch") ManagerNoticeSearchVO managerNoticeSearchVO, 
+			@RequestParam("moimCode") String moimCode, Model model) {
+		logger.debug("moimCode={}", moimCode);
+		try {
+			MoimVO moim = moimService.getMoim(moimCode);
+			model.addAttribute("moim",moim);
+			//MoimVO를 DB에서 받아서 Model에 담음
+			
+			//List<ManagerNoticeVO> 를 DB에서 받아서 Model에 담음
+			List<ManagerNoticeVO> managerNoticeList = managerNoticeService.getBoardList(managerNoticeSearchVO);
+			model.addAttribute("managerNoticeList", managerNoticeList);
+			
+			// TODO : managerNoticeList를 foreach로 돌려줘서 뽑음
+			
+		} catch (BizNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		
+		
+		return "moim/moimView";
+	}
+	
+	/**
+	 * 
+	 * @param moimIntroduce
+	 * @param model
+	 * @return
+	 * @throws BizNotFoundException
+	 * @author DNA
+	 * @since 2021.07.19
+	 */
+
+	@RequestMapping("moim/moimIntroduce")
+	public String IntroduceMoim(@RequestParam( "moimCode") String moimCode, Model model) throws BizNotFoundException {
+		MoimVO moim = moimService.getMoim(moimCode);
+		model.addAttribute("moim",moim);
+		
+		return "moim/moimIntroduce";
+	}
+
+	// TODO: Tab에 사용되는 게시판 완성 시 연결하기 위한 예시
+	
+	@RequestMapping("moim/banana")
+	public String aaa(@RequestParam("moimCode") String moimCode) {
+		logger.debug("moimCode={}", moimCode);
+		return "moim/banana";
+	}
+	@RequestMapping("moim/banana2")
+	public String aaa2(@RequestParam("moimCode") String moimCode) {
+		logger.debug("moimCode={}", moimCode);
+		return "moim/banana2";
+	}
+
+	
+}

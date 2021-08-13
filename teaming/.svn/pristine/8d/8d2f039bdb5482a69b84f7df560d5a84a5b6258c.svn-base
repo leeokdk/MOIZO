@@ -1,0 +1,110 @@
+package com.moim.service.impl;
+
+import java.util.List;
+
+import javax.inject.Inject;
+
+import org.springframework.stereotype.Service;
+
+import com.moim.dao.IMoimScheduleDao;
+import com.moim.dao.IScheduleEnterListDao;
+import com.moim.exception.BizMaximumExceedException;
+import com.moim.exception.BizNotEffectedException;
+import com.moim.exception.BizNotFoundException;
+import com.moim.service.IMoimScheduleService;
+import com.moim.vo.MoimScheduleSearchVO;
+import com.moim.vo.MoimScheduleVO;
+
+
+/**
+ * searchVO 추가함
+ * 
+ * @author DNA
+ * @since 2021.07.28
+ */
+@Service
+public class MoimScheduleServiceImpl implements IMoimScheduleService{
+
+	
+	@Inject
+	private IMoimScheduleDao moimScheduleDao;
+	
+	@Inject
+	private IScheduleEnterListDao scheduleEnterDao;
+	
+	
+	@Override
+	public List<MoimScheduleVO> getScheduleList(MoimScheduleSearchVO searchVO) {
+		int totalRowCount = moimScheduleDao.getScheduleCount(searchVO);
+		System.out.println(totalRowCount);
+		searchVO.setTotalRowCount(totalRowCount);
+		searchVO.pageSetting();
+		
+		return moimScheduleDao.getScheduleList(searchVO);
+	}
+
+	@Override
+	public MoimScheduleVO getSchedule(int mScheduleNo) throws BizNotFoundException {
+		
+		MoimScheduleVO moimSchedule = moimScheduleDao.getSchedule(mScheduleNo);
+		
+		if(moimSchedule == null) throw new BizNotFoundException();
+		
+		return moimSchedule;
+	}
+
+
+	@Override
+	public void modifySchedule(MoimScheduleVO moimScheduleVO) throws BizNotFoundException, BizNotEffectedException {
+		
+		MoimScheduleVO moimSchedule = moimScheduleDao.getSchedule(moimScheduleVO.getmScheduleNo());
+		if(moimSchedule == null) throw new BizNotEffectedException();
+		
+		// 글쓰기 버튼은 모임장만 보이기 때문에 수정 if조건은 걸지 않았음
+		int cnt = moimScheduleDao.updateSchedule(moimSchedule);
+		if(cnt < 1) throw new BizNotEffectedException();
+		
+	}
+
+	@Override
+	public void removeSchedule(MoimScheduleVO moimScheduleVO) throws BizNotFoundException, BizNotEffectedException {
+		
+		MoimScheduleVO moimSchedule = moimScheduleDao.getSchedule(moimScheduleVO.getmScheduleNo());
+		if(moimSchedule == null) throw new BizNotEffectedException();
+		
+		int cnt = moimScheduleDao.deleteSchedule(moimSchedule);
+		if(cnt < 1) throw new BizNotEffectedException();
+	}
+
+	@Override
+	public void registSchedule(MoimScheduleVO moimScheduleVO) throws BizNotEffectedException {
+		//moimScheduleVO.getmScheduleNo() 0
+		int cnt = moimScheduleDao.insertSchedule(moimScheduleVO);
+		
+		//3 
+		if(cnt < 1) throw new BizNotEffectedException();
+		
+	}
+
+	@Override
+	public MoimScheduleVO changeScheduleEnterMember(MoimScheduleVO moimScheduleVO) throws BizMaximumExceedException {
+		scheduleEnterDao.mergeScheduleEnter(moimScheduleVO);
+		moimScheduleDao.updateMoimScheduleEnterCount(moimScheduleVO);
+		// TODO: 회원이 참여하고 있는지 여부를 담아서 보내줘야 계속 체크하고 있는것이 가능함. 옥득언니껏도 살펴봐야할듯 
+		// 머지 문을 수정할까?
+		MoimScheduleVO checkVO = moimScheduleDao.getSchedule(moimScheduleVO.getmScheduleNo() );
+		if( checkVO != null && checkVO.getmScheduleEnterMax() < checkVO.getmScheduleEnter() ) {
+			throw new BizMaximumExceedException("설정인원 : " + checkVO.getmScheduleEnterMax() + ", 현재 총 인원 : " + checkVO.getmScheduleEnter() + "으로 초과 오류 발생 " );
+		}
+		return checkVO;
+	}
+	
+	@Override
+	public List<MoimScheduleVO> getScheduleEnterList(MoimScheduleVO moimScheduleVO) {
+		List<MoimScheduleVO> result = scheduleEnterDao.getScheduleEnterList(moimScheduleVO);
+		return result;
+	}
+	
+	
+
+}

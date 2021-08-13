@@ -1,0 +1,50 @@
+package com.moim.vo;
+
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
+
+/**
+ *  
+ * 모임장이 해당 스케줄에 참여한 사람을 확인하기 위함
+ * 
+ * @author DNA
+ * @since 2021.07.29
+ */
+public class ScheduleEnterListVO {
+
+	private int mScheduleNo;            /* 게시글 넘버 */
+	private String memberId;            /* 멤버아이디 */
+	private String moimCode;            /* 모임코드 */
+	
+	@Override
+	public String toString() {
+		return ToStringBuilder.reflectionToString(this, ToStringStyle.MULTI_LINE_STYLE);
+	}
+
+	public int getmScheduleNo() {
+		return mScheduleNo;
+	}
+
+	public void setmScheduleNo(int mScheduleNo) {
+		this.mScheduleNo = mScheduleNo;
+	}
+
+	public String getMemberId() {
+		return memberId;
+	}
+
+	public void setMemberId(String memberId) {
+		this.memberId = memberId;
+	}
+
+	public String getMoimCode() {
+		return moimCode;
+	}
+
+	public void setMoimCode(String moimCode) {
+		this.moimCode = moimCode;
+	}
+	
+	
+	
+}

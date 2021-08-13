@@ -1,0 +1,53 @@
+package com.moim.service.impl;
+
+import java.util.List;
+
+import javax.inject.Inject;
+
+import com.moim.dao.IManagerNoticeDao;
+import com.moim.exception.BizNotEffectedException;
+import com.moim.exception.BizNotFoundException;
+import com.moim.service.IManagerNoticeService;
+import com.moim.vo.ManagerNoticeSearchVO;
+import com.moim.vo.ManagerNoticeVO;
+/**
+ * 
+ * @author ok
+ *
+ */
+public class ManagerNoticeServiceImpl implements IManagerNoticeService {
+//	@Inject
+	IManagerNoticeDao managerNoticeDao;
+
+	@Override
+	public List<ManagerNoticeVO> getBoardList(ManagerNoticeSearchVO managerNoticeSearchVO) {
+		return null;
+	}
+
+	@Override
+	public ManagerNoticeVO getBoard(int mNoticeNo) throws BizNotEffectedException {
+		return null;
+	}
+
+	@Override
+	public int increaseHit(int mNoticeNo) throws BizNotEffectedException {
+		return 0;
+	}
+
+	@Override
+	public int modifyBoard(ManagerNoticeVO managerNoticeVO) throws BizNotFoundException, BizNotEffectedException {
+		return 0;
+	}
+
+	@Override
+	public int removeBoard(ManagerNoticeVO managerNoticeVO) throws BizNotFoundException, BizNotEffectedException {
+		return 0;
+	}
+
+	@Override
+	public int registBoard(ManagerNoticeVO managerNoticeVO) throws BizNotEffectedException {
+		return 0;
+	}
+	
+	
+}

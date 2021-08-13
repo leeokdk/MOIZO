@@ -1,0 +1,62 @@
+package com.moim.service.impl;
+
+import java.util.List;
+
+import javax.inject.Inject;
+
+import org.springframework.stereotype.Service;
+
+import com.moim.dao.IManagerNoticeDao;
+import com.moim.exception.BizNotEffectedException;
+import com.moim.exception.BizNotFoundException;
+import com.moim.service.IManagerNoticeService;
+import com.moim.vo.ManagerNoticeSearchVO;
+import com.moim.vo.ManagerNoticeVO;
+/**
+ * 
+ * @author ok
+ *
+ */
+@Service
+public class ManagerNoticeServiceImpl implements IManagerNoticeService {
+	@Inject
+	IManagerNoticeDao managerNoticeDao;
+
+	@Override
+	public List<ManagerNoticeVO> getBoardList(ManagerNoticeSearchVO managerNoticeSearchVO) {
+		// 총 row개수 구하기 + row개수 세팅, pageSetting, setting된 걸로 해당 
+		// ManagerNoticeVO List 구하기
+		int totalRowCount = managerNoticeDao.getBoardCount(managerNoticeSearchVO);
+		managerNoticeSearchVO.setTotalRowCount(totalRowCount);
+		managerNoticeSearchVO.pageSetting();
+		
+		return managerNoticeDao.getBoardList(managerNoticeSearchVO);
+	}
+
+	@Override
+	public ManagerNoticeVO getBoard(int mNoticeNo) throws BizNotEffectedException {
+		return null;
+	}
+
+	@Override
+	public int increaseHit(int mNoticeNo) throws BizNotEffectedException {
+		return 0;
+	}
+
+	@Override
+	public int modifyBoard(ManagerNoticeVO managerNoticeVO) throws BizNotFoundException, BizNotEffectedException {
+		return 0;
+	}
+
+	@Override
+	public int removeBoard(ManagerNoticeVO managerNoticeVO) throws BizNotFoundException, BizNotEffectedException {
+		return 0;
+	}
+
+	@Override
+	public int registBoard(ManagerNoticeVO managerNoticeVO) throws BizNotEffectedException {
+		return 0;
+	}
+	
+	
+}

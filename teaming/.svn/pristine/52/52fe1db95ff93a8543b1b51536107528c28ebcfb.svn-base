@@ -1,0 +1,70 @@
+package com.moim.vo;
+
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
+
+public class AdminNoticeVO {
+	private int aNoticeNo;               /* 게시글 넘버*/
+	private String aNoticeTitle;            /* 게시글 제목*/
+	private String aNoticeWriter;           /* 게시글 작성자*/
+	private String aNoticeContent;          /* 게시글 내용*/
+	private int aNoticeHit;              /* 게시글 조회수*/
+	private String aNoticeRegDate;          /* 게시글 등록날짜*/
+	private String aNoticeModDate;          /* 게시글 수정날짜*/
+	private String aNoticeDelYn;            /* 게시글 삭제여부*/
+	
+	@Override
+	public String toString() {
+		return ToStringBuilder.reflectionToString(this, ToStringStyle.MULTI_LINE_STYLE);
+	}
+	public int getaNoticeNo() {
+		return aNoticeNo;
+	}
+	public void setaNoticeNo(int aNoticeNo) {
+		this.aNoticeNo = aNoticeNo;
+	}
+	public String getaNoticeTitle() {
+		return aNoticeTitle;
+	}
+	public void setaNoticeTitle(String aNoticeTitle) {
+		this.aNoticeTitle = aNoticeTitle;
+	}
+	public String getaNoticeWriter() {
+		return aNoticeWriter;
+	}
+	public void setaNoticeWriter(String aNoticeWriter) {
+		this.aNoticeWriter = aNoticeWriter;
+	}
+	public String getaNoticeContent() {
+		return aNoticeContent;
+	}
+	public void setaNoticeContent(String aNoticeContent) {
+		this.aNoticeContent = aNoticeContent;
+	}
+	public int getaNoticeHit() {
+		return aNoticeHit;
+	}
+	public void setaNoticeHit(int aNoticeHit) {
+		this.aNoticeHit = aNoticeHit;
+	}
+	public String getaNoticeRegDate() {
+		return aNoticeRegDate;
+	}
+	public void setaNoticeRegDate(String aNoticeRegDate) {
+		this.aNoticeRegDate = aNoticeRegDate;
+	}
+	public String getaNoticeModDate() {
+		return aNoticeModDate;
+	}
+	public void setaNoticeModDate(String aNoticeModDate) {
+		this.aNoticeModDate = aNoticeModDate;
+	}
+	public String getaNoticeDelYn() {
+		return aNoticeDelYn;
+	}
+	public void setaNoticeDelYn(String aNoticeDelYn) {
+		this.aNoticeDelYn = aNoticeDelYn;
+	}
+	
+	
+}

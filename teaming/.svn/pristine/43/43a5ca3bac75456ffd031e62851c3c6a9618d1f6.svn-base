@@ -1,0 +1,27 @@
+package com.moim.service;
+
+import org.apache.ibatis.annotations.Mapper;
+
+import com.moim.exception.BizNotEffectedException;
+import com.moim.exception.BizNotFoundException;
+import com.moim.exception.BizPasswordNotMatchedException;
+import com.moim.vo.LoginVO;
+
+/**
+ * 
+ * <b> Login_Table <b>
+ * 4-4IRF ILoginService 참조
+ * logincheck 없앰 / 준오
+ * @author 다나
+ *@since 2021.07.14
+ */
+public interface ILoginService {
+
+	public void registUserRole(LoginVO login) throws BizNotFoundException, BizNotEffectedException;
+	
+	public String getUserRole(String id) throws BizNotFoundException;
+	
+	public LoginVO getUser(String userId, String userPassword) throws BizNotFoundException;
+		
+}
+ 

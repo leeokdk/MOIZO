@@ -1,0 +1,47 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+
+<!DOCTYPE html>
+<%request.setCharacterEncoding("UTF-8"); %>
+<html>
+<head>
+<%@include  file="/WEB-INF/inc/header.jsp" %>
+<meta charset="UTF-8">
+<title>Teaming</title>
+</head>
+<body>
+<!-- Tab을 위해서는 introduce를 따로 빼야함 -->
+<!-- //TODO : 내용 꾸밀 간격줘야함   -->
+
+<div class="container">
+	<div class="highlight">
+  	
+  	<h5>INFO::</h5>
+	<pre>${moim.moimIntroduce }</pre>
+	<h5>MANAGER::</h5>
+	<div id="id_managerInfo">
+		<!-- 여기에 append -->
+	</div>
+	
+	</div><!-- highlight -->
+</div><!-- container -->
+<script type="text/javascript">
+	$(document).ready(function() {
+		$.ajax({
+			type : 'POST',
+			data : '${moim.moimCode}',
+			url : '/moim/managerInfo.ajax',
+			dataType : "text",
+			success : function(result) {
+				alert(result);
+				console.log(result);
+			},
+			error : function(xhr, status, error) {
+				console.log('status : ' + xhr.status);
+			}
+		});
+	});
+</script>
+</body>
+</html>

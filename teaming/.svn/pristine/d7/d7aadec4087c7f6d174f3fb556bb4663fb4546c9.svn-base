@@ -1,0 +1,27 @@
+package com.moim.service;
+
+import java.util.List;
+
+import com.moim.exception.BizAccessFailException;
+import com.moim.exception.BizNotEffectedException;
+import com.moim.exception.BizNotFoundException;
+import com.moim.vo.ReplyVO;
+
+/**
+ * 
+ * <b> Reply_Table <b>
+ * 4-4IRF IReplyService 참조
+ * 
+ * @author 다나
+ * @since 2021.07.14
+ */
+public interface IReplyService {
+
+	public List<ReplyVO> getReplyListByParent();
+
+	public void registReply(ReplyVO reply);
+	
+	public void modifyReply(ReplyVO reply) throws BizNotFoundException, BizAccessFailException;
+
+	public void removeReply(ReplyVO reply) throws BizNotFoundException, BizAccessFailException;
+}

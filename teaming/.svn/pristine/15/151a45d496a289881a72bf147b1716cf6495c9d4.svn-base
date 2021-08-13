@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.moim.dao.IUserDao">
+
+<sql id="search">
+		<if test="@org.apache.commons.lang3.StringUtils@isNotBlank(searchWord)">
+			<choose>
+				<when test='searchType == "NM"'> and a.user_name like '%' || #{searchWord} || '%'  </when>
+				<when test='searchType == "ID"'> and a.user_id like '%' || #{searchWord} || '%' </when>
+			</choose>
+		</if>  		<!-- @클래스풀네임@ 식으로 사용함. -->
+		<if test="@org.apache.commons.lang3.StringUtils@isNotBlank(searchHobby)">
+			and c.hb_code like '%' || #{searchHobby} || '%'
+		</if>  		<!-- @클래스풀네임@ 식으로 사용함. -->
+		<if test="@org.apache.commons.lang3.StringUtils@isNotBlank(searchLocationBig)">
+			AND a.local_big_code = #{searchLocationBig}
+		</if>
+		<if test="@org.apache.commons.lang3.StringUtils@isNotBlank(searchLocationMid)">
+			AND a.local_mid_code = #{searchLocationMid}
+		</if>
+		<if test="@org.apache.commons.lang3.StringUtils@isNotBlank(searchLocationMid)">
+			AND a.local_small_code = #{searchLocationSmall}
+		</if>
+</sql>
+	
+	<select id="getUserList" parameterType="com.moim.vo.UserSearchVO" resultType="com.moim.vo.UserVO">
+		<include refid="common.prePaging"></include>
+						SELECT											
+				 		a.user_id    ,    a.user_password  ,      a.user_name   , 			
+				 		a.user_age   ,    a.user_email     ,      a.user_gender , 			
+				 		a.user_pic   ,    a.user_introduce ,      a.user_del_yn , 
+				 		a.local_big_code, a.local_mid_code, a.local_small_code  , 			
+				 		c.hb_code as user_hobby,
+				 		b.hb_name as user_hobby_nm,					
+				 		d.local_big_name as local_big_nm, 
+				 		d.local_mid_name as local_mid_nm,
+				 		d.local_small_name as local_small_nm
+						FROM user_table a, hobby b, attention c, location d
+						where a.user_id = c.user_id
+						and c.hb_code = b.hb_code 				
+						and a.local_big_code = d.local_big_code
+						and a.local_mid_code = d.local_mid_code
+						and a.local_small_code = d.local_small_code
+		<include refid="search"></include>		
+						order by user_id desc		
+		<include refid="common.postPaging"></include>		
+		order by rnum desc					
+	</select>
+	
+	<select id="getUser" parameterType="java.lang.String" resultType="com.moim.vo.UserVO">  
+		SELECT 
+		a.user_id
+       , a.user_password
+       , a.user_email
+       , a.user_introduce
+       , a.user_name
+       , a.user_gender
+       , to_char(user_age,'YYYY-MM-DD') AS user_age
+       , a.user_del_yn
+       , a.user_pic
+       , a.local_big_code
+       , a.local_mid_code
+       , a.local_small_code
+       , b.hb_name AS user_hobby_nm
+       , b.hb_code AS user_hobby
+		FROM user_table a, hobby b, attention c
+		where a.user_id = c.user_id
+		and b.hb_code = c.hb_code
+		and a.user_id = #{userId}                 
+	</select>
+	
+	<insert id="insertUser" parameterType="com.moim.vo.UserVO">
+INSERT INTO user_table (
+    user_id
+    , user_password
+    , user_email
+    , local_big_code
+    , user_introduce
+    , user_name
+    , user_gender
+    , user_age
+    , user_del_yn
+    , user_pic
+    , local_mid_code
+    , local_small_code
+) VALUES (
+	<![CDATA[
+    #{userId}
+    , #{userPassword}
+    , #{userEmail}
+    , #{localBigCode}
+    , #{userIntroduce}
+    , #{userName}
+    , #{userGender}
+    , #{userAge}
+    , 'N'
+    , #{userPic}
+    , #{localMidCode}
+    , #{localSmallCode}
+    ]]>
+)			
+	</insert>
+	
+	<update id="updateUser" parameterType="com.moim.vo.UserVO">
+		 UPDATE user SET	
+		user_pass = #{userPassword},         
+		user_name = #{userName},			
+		user_bir  = #{userBir},			
+		user_zip  = #{userZip},			
+		user_add1 = #{userAdd1},			
+		user_add2 = #{userAdd2},			
+		user_hp   = #{userHp},			
+		user_mail = #{userMail},			
+		user_job  = #{userJob},			
+		user_hobby= #{userHobby}		
+		where user_id = #{userId}	
+	</update>
+	
+	<update id="deleteUser" parameterType="com.moim.vo.UserVO">
+		UPDATE user_table SET	
+		user_del_yn = 'Y'	
+		where user_id = #{userId}	
+	</update>
+	
+	<select id="getUserCount" parameterType="com.moim.vo.UserSearchVO" resultType="int">
+		SELECT count(*) FROM user_table a, hobby b, attention c, location d
+		where 1 = 1
+		and a.user_id = c.user_id
+		and c.hb_code = b.hb_code 				
+		and a.local_big_code = d.local_big_code
+		and a.local_mid_code = d.local_mid_code
+		and a.local_small_code = d.local_small_code
+		<include refid="search"></include>
+	</select>
+	
+	<select id="getUserRoleByUserId" parameterType="String" resultType="String">
+		select a.role_name
+		from login_table a
+		where user_id = #{userId} 
+	</select>
+	
+</mapper>

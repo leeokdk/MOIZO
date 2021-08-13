@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.moim.dao.IHobbyDao">
+	<select id="getHobbyCode" resultType="com.moim.vo.HobbyVO" >
+	SELECT hb_code, hb_name 
+	FROM hobby                                              
+	</select>
+	<select id="getHobbyCodebyRanNum" resultType="com.moim.vo.HobbyVO" parameterType="int" >
+	SELECT * FROM(
+		SELECT a.*, rownum AS rnum FROM(
+			SELECT hb_code, 
+			 	hb_name 
+			 	FROM hobby
+			)a 
+		)b
+	WHERE rnum = #{randN}                               
+	</select>
+	<select id="getHobbyName" parameterType="String" resultType="String">
+	SELECT hb_name 
+	FROM hobby
+	WHERE hb_code = #{hbCode}  
+	</select>
+</mapper>

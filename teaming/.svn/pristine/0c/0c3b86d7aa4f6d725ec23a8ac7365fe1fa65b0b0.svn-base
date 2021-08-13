@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.moim.dao.IMoimScheduleDao">
+
+
+<select id="getScheduleCount" parameterType="com.moim.vo.MoimScheduleSearchVO" resultType="int">
+SELECT count(*) FROM moim_schedule
+	WHERE 1=1
+	AND moim_code = #{moimCode}
+
+</select>
+
+<select id="getScheduleList" parameterType="com.moim.vo.MoimScheduleSearchVO" resultType="com.moim.vo.MoimScheduleVO">
+
+<include refid="common.prePaging"/>
+
+SELECT moim_code
+       , m_schedule_no
+       , m_schedule_enter
+       , to_char(m_schedule_reg_date,'YYYY-MM-DD') AS m_schedule_reg_date
+       , to_char(m_schedule_mod_date,'YYYY-MM-DD') AS m_schedule_mod_date
+       , m_schedule_start_time
+       , m_schedule_end_time
+       , m_schedule_place
+       , m_schedule_enter_max
+FROM moim_schedule
+WHERE moim_code = #{moimCode}
+ORDER BY m_schedule_mod_date DESC
+<include refid="common.postPaging"/>
+
+</select>
+
+<select id="getSchedule" parameterType="int" resultType="com.moim.vo.MoimScheduleVO">
+SELECT moim_code
+       , m_schedule_no
+       , m_schedule_enter
+       , to_char(m_schedule_reg_date,'YYYY-MM-DD') AS m_schedule_reg_date
+       , to_char(m_schedule_mod_date,'YYYY-MM-DD') AS m_schedule_mod_date
+       , m_schedule_start_time
+       , m_schedule_end_time
+       , m_schedule_place
+       , m_schedule_enter_max
+FROM moim_schedule
+WHERE m_schedule_no = #{mScheduleNo}
+</select>
+
+<update id="updateSchedule" parameterType="com.moim.vo.MoimScheduleVO">
+
+UPDATE moim_schedule SET
+         m_schedule_mod_date = #{mScheduleModDate}
+       , m_schedule_start_time = #{mScheduleStartTime}
+       , m_schedule_end_time = #{mScheduleEndTime}
+       , m_schedule_place = #{mSchedulePlace}
+       , m_schedule_enter_max = #{mScheduleEnterMax}
+WHERE m_schedule_no = #{mScheduleNo}
+</update>
+
+
+<delete id="deleteSchedule" parameterType="com.moim.vo.MoimScheduleVO">
+ DELETE FROM moim_schedule
+ WHERE m_schedule_no = #{mScheduleNo}
+
+</delete>
+
+<insert id="insertSchedule" parameterType="com.moim.vo.MoimScheduleVO">
+
+<selectKey resultType="int" keyProperty="mScheduleNo" order="BEFORE">
+ SELECT MOIM_SCHEDULE_SEQ.NEXTVAL FROM DUAL 
+</selectKey>  
+
+INSERT INTO moim_schedule VALUES(
+		#{moimCode}, #{mScheduleNo}, 0, SYSDATE,
+		#{mScheduleModDate}, #{mScheduleStartTime}, #{mScheduleEndTime}, 
+		#{mSchedulePlace}, #{mScheduleEnterMax}
+		)
+		
+</insert>
+
+	<update id="updateMoimScheduleEnterCount">
+		<![CDATA[
+		UPDATE moim_schedule a
+	  	   SET m_schedule_enter = (SELECT COUNT(*) 
+	  	                             FROM schedule_enter_list b 
+	  	                            WHERE a.moim_code = b.moim_code 
+	  	                              AND a.m_schedule_no = b.m_schedule_no 
+	  	                           )    
+	     WHERE moim_code =  #{moimCode}
+	       AND m_schedule_no = #{mScheduleNo} 	
+		]]>
+
+</update>
+
+
+</mapper>

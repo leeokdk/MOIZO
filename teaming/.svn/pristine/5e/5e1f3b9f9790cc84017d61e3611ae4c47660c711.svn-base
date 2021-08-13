@@ -1,0 +1,212 @@
+package com.moim.web;
+
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.attribute.PosixFilePermission;
+import java.nio.file.attribute.PosixFilePermissions;
+import java.util.List;
+import java.util.Set;
+
+import javax.inject.Inject;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.util.FileCopyUtils;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.SessionAttributes;
+import org.springframework.web.bind.support.SessionStatus;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import com.moim.common.valid.Step;
+import com.moim.dao.IAttentionDao;
+import com.moim.dao.IHobbyDao;
+import com.moim.dao.ILocationDao;
+import com.moim.exception.BizDuplicateKeyException;
+import com.moim.exception.BizNotEffectedException;
+import com.moim.exception.BizNotFoundException;
+import com.moim.service.ILoginService;
+import com.moim.service.IUserService;
+import com.moim.service.impl.MailSendService;
+import com.moim.vo.AttentionVO;
+import com.moim.vo.HobbyVO;
+import com.moim.vo.LocationVO;
+import com.moim.vo.LoginVO;
+import com.moim.vo.UserVO;
+
+@Controller
+@SessionAttributes("user")
+public class JoinController {
+	private Logger logger = LoggerFactory.getLogger(this.getClass());
+
+	@Value("#{uploadPath['file.upload.path']}")
+	private String absolutePath;
+
+	@ModelAttribute("user") // 모델에 이미 user가 있으면 실행이 안됌.
+	public UserVO user() {
+		UserVO user = new UserVO();
+		return user;
+	}
+
+	@Inject
+	ILocationDao locationDao;
+
+	@Inject
+	IHobbyDao hobbyDao;
+	
+	@Inject
+	IAttentionDao attentionDao;
+	
+	@Inject
+	IUserService userService;
+
+	@Inject
+	ILoginService loginService;
+
+
+//	ResultMessageVO resultMessageVO = new ResultMessageVO();
+
+	@ModelAttribute("hobbyList")
+	public List<HobbyVO> hobbyList() {
+		List<HobbyVO> hobbyList = hobbyDao.getHobbyCode();
+		return hobbyList;
+	}
+
+	@ModelAttribute("locationList")
+	public List<LocationVO> locationList() {
+		List<LocationVO> locationList = locationDao.getBigLocation();
+		return locationList;
+	}
+
+	@RequestMapping("/join/join")
+	public String step1(@ModelAttribute("user") UserVO user) {
+
+		return "join/join";
+	}
+
+	// @ModelAttribute 는 컨트롤러가 실행될 때마다 user 객체를 새로 생성 후 파라미터로 넘어온 값을 세팅하고 model에 담음
+	// 그래서 step2의 아이디 비밀번호와 같은 정보들을 계속해서 넘겨주지 않은이상 스텝2의 정보들은 마지막에 regist에서 모두 null로
+	// 세팅됌.
+	// -> 그래서 계속 넘겨주기위해 class 윗단에 @SessionAttributes 사용 세션에 model를 저장
+	// 회원 등록하고 나면은 다시 session 값을 지우기
+	// BingResult 는 유효성 검사 후 관련 에러를 저장한 객체
+	@RequestMapping("/join/regist")
+	public String regist(@ModelAttribute("user") @Validated({ Step.class }) UserVO user, BindingResult errors,
+			Model model, SessionStatus sessionStatus, @RequestParam("upload_profile") MultipartFile file, RedirectAttributes redirectAttributes) {
+		if (errors.hasErrors()) {
+			return "join/join";
+		}
+		try {
+			if (!user.getUserPic().equals("default")) {
+				String fileName = user.getUserId() + file.getOriginalFilename();
+				File uploadPath = new File(absolutePath + "/userProfile", fileName);
+				// 해당 경로 없으면 경로 만들기
+				if (!new File(absolutePath + "/userProfile").exists()) {
+					new File(absolutePath + "/userProfile").mkdirs();
+				}
+				// 파일 업로드 함.
+				FileCopyUtils.copy(file.getBytes(), uploadPath);
+				
+				// 이미지 파일 권한변경
+				int permissionsCode = 777;
+			    String targetPath = uploadPath.getPath(); // 디렉토리만 넣을 경우 디렉토리만 동작
+			    File targetFile = new File(targetPath);
+			    // 모든권한을 제거하고 시작    
+			    targetFile.setReadable(false, false);
+			    targetFile.setWritable(false, false);
+			    targetFile.setExecutable(false, false);
+			    if(targetFile.exists()) {
+			        if(permissionsCode == 777) {
+			            // JDK 7 이상
+			            Path path = Paths.get(targetPath);
+			            Set<PosixFilePermission> posixPermissions = PosixFilePermissions.fromString("rwxrwxrwx");
+			            Files.setPosixFilePermissions(path, posixPermissions);
+			        }
+			    }
+			    
+			    
+				fileName = "/userProfile/" + fileName;
+				user.setUserPic(fileName);		// default 아닐 때는 경로 저장
+			}
+			// 세션의 값들 다시 초기화
+			sessionStatus.setComplete();
+			// 해당 유저의 유저권한 설정
+			LoginVO login = new LoginVO(user.getUserId(), "GUEST", user.getUserName(), user.getUserPassword(), "NOPE", user.getUserPic());
+
+			user.setUserRole(login.getRoleName());
+			
+			logger.debug("user", user);
+			logger.debug("login", login);
+			userService.registUser(user);
+			loginService.registUser(login);			
+			
+			// 해당 유저의 취미 설정
+			AttentionVO attentionVO = new AttentionVO(user.getUserId(), user.getUserHobby());
+			attentionDao.insertHobby(attentionVO);		// 무결성 제약조건 : 부모인 user테이블에 값을 먼저 넣어줘야 자식테이블인 attention 테이블에 값을 넣을 수 있음.
+
+		} catch (BizNotEffectedException ene) { // update 구문 수행시 변수들이 유효하지 않을 때
+			redirectAttributes.addFlashAttribute("check", "n");
+			redirectAttributes.addFlashAttribute("fail", "회원 가입 실패");
+			return "redirect:/";
+		} catch (BizDuplicateKeyException ed) {
+			redirectAttributes.addFlashAttribute("check", "n");
+			redirectAttributes.addFlashAttribute("fail", "회원 가입 실패");
+			return "redirect:/";
+		} catch (IOException e) {
+			redirectAttributes.addFlashAttribute("check", "n");
+			redirectAttributes.addFlashAttribute("fail", "회원 가입 실패");
+			return "redirect:/";
+		}
+		// 변화가 성공 했을 때
+		redirectAttributes.addFlashAttribute("check", "y");
+		redirectAttributes.addFlashAttribute("success", "회원가입 성공");
+		return "redirect:/";
+	}
+
+	@RequestMapping("/join/cancel")
+	public String cancel(SessionStatus sessionStatus) {
+		sessionStatus.setComplete();
+		return "redirect:/";
+	}
+
+	@Inject
+	MailSendService mss;
+
+	@RequestMapping("/join/mailsend")
+	@ResponseBody // ajax 사용시 데이터를 받을 때, return 한 값이 ajax의 데이터로 들어옴,
+	public String mail(@RequestParam("mail") String mail) {
+		String random = mss.sendAuthMail(mail);
+		return random;
+	}
+
+	@PostMapping("/join/idCheck")
+	@ResponseBody // ajax 사용시 데이터를 받을 때, return 한 값이 ajax의 데이터로 들어옴,
+	public String userCheck(@RequestParam("userId") String userId) {
+		String message = "";
+		try {
+			System.out.println(userId);
+			UserVO user = userService.getUser(userId);
+			System.out.println(user.getUserId());
+			if (userId.equals(user.getUserId())) {
+				message = "false";
+			}
+			return message;
+		} catch (BizNotFoundException e) {
+			message = "true";
+			return message;
+		}
+	}
+
+}

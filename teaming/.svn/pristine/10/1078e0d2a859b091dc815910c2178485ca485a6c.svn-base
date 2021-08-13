@@ -1,0 +1,45 @@
+package com.moim.service.impl;
+
+import java.util.List;
+
+import org.springframework.stereotype.Service;
+
+import com.moim.exception.BizDuplicateKeyException;
+import com.moim.exception.BizNotEffectedException;
+import com.moim.exception.BizNotFoundException;
+import com.moim.service.IUserService;
+import com.moim.vo.UserSearchVO;
+import com.moim.vo.UserVO;
+/**
+ * @author 준오
+ * @since 2021.07.14 
+ */
+//@Service
+public class UserServiceImpl implements IUserService {
+
+	@Override
+	public List<UserVO> getUserList(UserSearchVO userSearchVO) {
+		return null;
+	}
+
+	@Override
+	public void registUser(UserVO User) throws BizDuplicateKeyException, BizNotEffectedException {
+		
+	}
+
+	@Override
+	public UserVO getUser(String userId) throws BizNotFoundException {
+		return null;
+	}
+
+	@Override
+	public void modifyUser(UserVO User) throws BizNotEffectedException, BizNotFoundException {
+		
+	}
+
+	@Override
+	public void removeUser(UserVO User) throws BizNotEffectedException, BizNotFoundException {
+		
+	}
+
+}

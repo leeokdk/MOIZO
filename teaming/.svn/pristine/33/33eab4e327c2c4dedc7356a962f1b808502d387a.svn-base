@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans:beans xmlns="http://www.springframework.org/schema/mvc"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:beans="http://www.springframework.org/schema/beans"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:mybatis-spring="http://mybatis.org/schema/mybatis-spring"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:cache="http://www.springframework.org/schema/cache"
+	xmlns:util="http://www.springframework.org/schema/util"
+	xmlns:websocket="http://www.springframework.org/schema/websocket"
+	xsi:schemaLocation="http://www.springframework.org/schema/websocket http://www.springframework.org/schema/websocket/spring-websocket-4.3.xsd
+		http://www.springframework.org/schema/cache http://www.springframework.org/schema/cache/spring-cache-4.3.xsd
+		http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-4.3.xsd
+		http://mybatis.org/schema/mybatis-spring http://mybatis.org/schema/mybatis-spring-1.2.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.3.xsd
+		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.3.xsd
+		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-4.3.xsd">
+	
+	<!-- @MVC 기반 환경 설정 자동 처리  -->
+	<annotation-driven />
+
+	<!-- 요청에 대해서 바로 뷰로 처리 (컨트롤러 필요없는) -->
+	<view-controller path="/" view-name="home" />
+	<view-controller path="/main" view-name="home" />
+	
+	<!-- 정적자원 요청 처리  -->
+	<resources mapping="/resource/**" location="/resources/" />
+	<resources mapping="/images/**" location="/images/" />
+	
+	<!-- 컨트롤러에서 리턴한 뷰이름에 따른 결정자 설정  -->
+	<beans:bean 
+			id="viewResolver" 
+			class="org.springframework.web.servlet.view.InternalResourceViewResolver"
+			p:prefix="/WEB-INF/views/"
+			p:suffix=".jsp" 
+			/>
+	
+	<!-- @Component 어노테이션 검색을 해서 빈으로 등록(스프링이 관리하는 객체를 빈이라 부릅니다.)  -->
+	<context:component-scan base-package="com.moim" use-default-filters="true">
+		<!-- 기본적으로 모든 것을 검색하는것을 방지하고 필요한 것만 등록  -->
+		<!-- <context:include-filter type="annotation" expression="org.springframework.stereotype.Controller" /> -->
+	</context:component-scan>
+
+	<!-- 14시 55분  -->
+	<!-- mybatis관련 내용 부모컨테이너 -->
+	<beans:bean id="dataSource"
+				class="org.apache.commons.dbcp2.BasicDataSource"
+				destroy-method="close"
+				p:username="moim"
+				p:password="oracle"
+				p:url="jdbc:oracle:thin:@192.168.1.43:1521:xe"
+				p:driverClassName="oracle.jdbc.driver.OracleDriver"
+			 />	
+			 
+	<beans:bean id="sqlSession"
+				  class="org.mybatis.spring.SqlSessionFactoryBean"
+				  p:dataSource-ref="dataSource"
+				  p:configLocation="classpath:mybatis/mybatis-config.xml"
+				  p:mapperLocations="classpath:mybatis/mapper/*.xml"
+	/>
+    
+	<mybatis-spring:scan base-package="com.moim" 
+	          annotation="org.apache.ibatis.annotations.Mapper"/>
+
+   	<beans:bean id="multipartResolver"
+		class="org.springframework.web.multipart.support.StandardServletMultipartResolver"
+	/>
+	
+	<!-- el을 쓰기 위한 프로퍼티 불러오기 -->
+	<util:properties id="uploadPath" location="classpath:/appconfig.properties"></util:properties>
+	
+	
+	<!-- context부모 컨테이너에 분리시켜 놓았었는데 하나로 통일시킴. 부모컨테이너가 없음. -->
+		<!-- email 인증 관련 -->
+	<beans:bean id="mailSender"
+		class="org.springframework.mail.javamail.JavaMailSenderImpl">
+		<beans:property name="host" value="smtp.gmail.com" />
+		<beans:property name="port" value="587" />
+		<beans:property name="username" value="teamingManager@gmail.com" />
+		<beans:property name="password" value="oracle123!" />
+		<beans:property name="javaMailProperties">
+			<beans:props>
+				<beans:prop key="mail.transport.protocol">smtp</beans:prop>
+				<beans:prop key="mail.smtp.auth">true</beans:prop>
+				<beans:prop key="mail.smtp.starttls.enable">true</beans:prop>
+				<beans:prop key="mail.debug">true</beans:prop>
+			</beans:props>
+		</beans:property>
+	</beans:bean>
+	
+	<!-- 인터셉터 -->
+	<interceptors>
+		<interceptor>
+			<mapping path="/moim/**"/>
+			<mapping path="/admin/noticeView?*"/>
+			<beans:bean class="com.moim.common.LoginCheckInterceptor"></beans:bean>
+		</interceptor>
+ 		<interceptor>
+			<mapping path="/admin/**"/>
+			<exclude-mapping path="/admin/noticeList.*"/>
+			<exclude-mapping path="/admin/noticeView*"/>
+			<beans:bean class="com.moim.common.AdminCheckInterceptor"></beans:bean>
+		</interceptor>
+	</interceptors>
+	
+	<!-- 웹소켓용 -->
+	<beans:bean id="echoHandler" class="com.moim.common.EchoHandler" />
+	<websocket:handlers>
+	    <websocket:mapping handler="echoHandler" path="/echo-ws" />
+	    <websocket:handshake-interceptors>
+	        <beans:bean class="org.springframework.web.socket.server.support.HttpSessionHandshakeInterceptor" />
+	    </websocket:handshake-interceptors>	
+	    <websocket:sockjs />
+	</websocket:handlers>
+</beans:beans>

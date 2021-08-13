@@ -1,0 +1,46 @@
+package com.moim.dao;
+
+import java.util.List;
+
+import org.apache.ibatis.annotations.Mapper;
+
+import com.moim.vo.MoimScheduleVO;
+
+/**
+ * 
+ * 모임 일정 등록을 위한 Dao 
+ * 
+ * @author 다나
+ * @since 2021.07.28
+ */
+@Mapper
+public interface IMoimScheduleDao {
+
+	public List<MoimScheduleVO> getScheduleList();
+
+	public MoimScheduleVO getSchedule(int mScheduleNo);
+
+	/**
+	 * increaseHit과 비슷하지만 완전히 눌러야 +1이 되고 인원수를 계산할 수 있도록 함
+	 * 
+	 * @param mScheduleNo
+	 * @return
+	 */
+	public int increaseEnter(int mScheduleNo);
+	
+	/**
+	 * 
+	 * 일정을 참가하기로 한 상태에서 참가를 취소했을때 카운트가 줄어들도록 함
+	 * 
+	 * @param mScheduleNo
+	 * @return
+	 */
+	public int decreaseEnter(int mScheduleNo);
+
+	public int updateSchedule(MoimScheduleVO moimScheduleVO);
+
+	public int deleteSchedule(MoimScheduleVO moimScheduleVO);
+
+	public int insertSchedule(MoimScheduleVO moimScheduleVO);
+
+}

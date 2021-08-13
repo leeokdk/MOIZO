@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.moim.dao.ILocationDao">
+	<select id="getBigLocation" resultType="com.moim.vo.LocationVO" >
+	SELECT
+    distinct local_big_code,
+    local_big_name
+	FROM location
+    order by local_big_code
+	</select>
+	
+	<select id="getLocationByParent" parameterType="String" resultType="com.moim.vo.LocationVO">
+	SELECT
+    distinct local_mid_code,
+    local_mid_name
+	FROM location
+    where LOCAL_BIG_CODE = #{bigCode}
+    and local_mid_code is not null
+    order by local_mid_code
+	</select>
+	
+	
+</mapper>

@@ -1,0 +1,70 @@
+package com.moim.vo;
+
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
+
+public class ReplyVO {
+	private String reNo;                    /* 댓글 넘버*/
+	private String reCode;                  /* 게시판 코드*/
+	private String aNoticeNo;               /* 게시글 넘버*/
+	private String memberId;                /* 멤버 아이디*/
+	private String reContent;               /* 댓글 내용*/
+	private String reRegDate;               /* 댓글 작성날짜*/
+	private String reModDate;               /* 댓글 수정날짜*/
+	private String reDelYn;                 /* 댓글 삭제여부*/
+	
+	@Override
+	public String toString() {
+		return ToStringBuilder.reflectionToString(this, ToStringStyle.MULTI_LINE_STYLE);
+	}
+	
+	public String getReNo() {
+		return reNo;
+	}
+	public void setReNo(String reNo) {
+		this.reNo = reNo;
+	}
+	public String getReCode() {
+		return reCode;
+	}
+	public void setReCode(String reCode) {
+		this.reCode = reCode;
+	}
+	public String getaNoticeNo() {
+		return aNoticeNo;
+	}
+	public void setaNoticeNo(String aNoticeNo) {
+		this.aNoticeNo = aNoticeNo;
+	}
+	public String getMemberId() {
+		return memberId;
+	}
+	public void setMemberId(String memberId) {
+		this.memberId = memberId;
+	}
+	public String getReContent() {
+		return reContent;
+	}
+	public void setReContent(String reContent) {
+		this.reContent = reContent;
+	}
+	public String getReRegDate() {
+		return reRegDate;
+	}
+	public void setReRegDate(String reRegDate) {
+		this.reRegDate = reRegDate;
+	}
+	public String getReModDate() {
+		return reModDate;
+	}
+	public void setReModDate(String reModDate) {
+		this.reModDate = reModDate;
+	}
+	public String getReDelYn() {
+		return reDelYn;
+	}
+	public void setReDelYn(String reDelYn) {
+		this.reDelYn = reDelYn;
+	}
+	
+}

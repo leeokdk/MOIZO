@@ -1,0 +1,25 @@
+package com.moim.service.impl;
+
+import java.util.List;
+
+import javax.inject.Inject;
+
+import com.moim.dao.ILocationDao;
+import com.moim.service.ILocationService;
+import com.moim.vo.LocationVO;
+/**
+ * 
+ * @author ok
+ *
+ */
+public class LocationServiceImpl implements ILocationService {
+	
+//	@Inject
+	ILocationDao locationDao;
+	
+	@Override
+	public List<LocationVO> getLocationByParent(String parentCode) {
+		return null;
+	}
+
+}

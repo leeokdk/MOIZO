@@ -1,0 +1,145 @@
+package com.moim.web;
+
+import java.util.List;
+
+import javax.inject.Inject;
+
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.ModelAndView;
+
+import com.moim.common.vo.ResultMessageVO;
+import com.moim.exception.BizNotEffectedException;
+import com.moim.exception.BizNotFoundException;
+import com.moim.service.IFreeService;
+import com.moim.vo.FreeSearchVO;
+import com.moim.vo.FreeVO;
+
+@Controller
+@RequestMapping("/moim")
+public class FreeController {
+	
+	@Inject
+	IFreeService freeService;
+	
+	
+	@RequestMapping("/freeList")
+	public String freeList(@ModelAttribute("searchVO") FreeSearchVO searchVO, Model model) {
+		model.addAttribute("searchVO",searchVO);
+		List<FreeVO> freeList = freeService.getFreeList(searchVO);
+		model.addAttribute("freeList", freeList);
+		return "free/freeList";
+	}
+	
+	@RequestMapping("freeView")
+	public String freeView(@RequestParam(value = "freeNo", required = true)int freeNo, Model model) {
+		try {
+			freeService.increaseHit(freeNo);
+			FreeVO free = freeService.getFree(freeNo);
+			model.addAttribute("free", free);
+		} catch(BizNotFoundException | BizNotEffectedException e) {
+			model.addAttribute("e", e);
+		}
+		return "free/freeView";
+	}
+	
+	@RequestMapping("/freeForm")
+	public String freeForm(Model model) {
+		return "free/freeForm";
+	}
+	
+	@RequestMapping(value="/freeEdit", method = RequestMethod.GET)
+	public ModelAndView freeEdit(@RequestParam("freeNo")int freeNo) {
+		ModelAndView mav = new ModelAndView();
+		
+		try {
+			FreeVO free = freeService.getFree(freeNo);
+			mav.addObject("free", free);
+			mav.setViewName("free/freeEdit");
+		} catch(BizNotFoundException e) {
+			mav.addObject("e", e);
+		}
+		return mav;
+	}
+	
+	@RequestMapping(value="/freeModify", method = RequestMethod.POST)
+	public String freeModify(@ModelAttribute("free") FreeVO free, Model model) {
+		ResultMessageVO resultMessageVO = new ResultMessageVO();
+		try {
+			freeService.modifyFree(free);
+			resultMessageVO.setResult(true);
+			resultMessageVO.setMessage("수정성공");
+			resultMessageVO.setTitle("수정");
+			resultMessageVO.setUrl("/free/freeList");
+			resultMessageVO.setUrlTitle("목록으로");
+		}catch(BizNotFoundException enf){
+			resultMessageVO.setResult(false);
+			resultMessageVO.setMessage("삭제실패 notFound");
+			resultMessageVO.setTitle("삭제");
+			resultMessageVO.setUrl("/free/freeList");
+			resultMessageVO.setUrlTitle("목록으로");
+		}catch(BizNotEffectedException ene){
+			resultMessageVO.setResult(false);
+			resultMessageVO.setMessage("삭제 실패 notEffected");
+			resultMessageVO.setTitle("삭제");
+			resultMessageVO.setUrl("/free/freeList");
+			resultMessageVO.setUrlTitle("목록으로");;
+		}
+		model.addAttribute("resultMessageVO", resultMessageVO);
+		
+		return "common/message";
+	}
+	
+	@RequestMapping("/freeRegist")
+	public String freeRegist(@ModelAttribute("free")FreeVO free, Model model) {
+		ResultMessageVO resultMessageVO = new ResultMessageVO();
+		try {
+			freeService.registFree(free);
+			resultMessageVO.setResult(true);
+			resultMessageVO.setMessage("등록성공");
+			resultMessageVO.setTitle("등록");
+			resultMessageVO.setUrl("/free/freeList");
+			resultMessageVO.setUrlTitle("목록으로");
+		}catch(BizNotEffectedException enf){
+			resultMessageVO.setResult(false);
+			resultMessageVO.setMessage("등록 실패");
+			resultMessageVO.setTitle("등록");
+			resultMessageVO.setUrl("/free/freeList");
+			resultMessageVO.setUrlTitle("목록으로");
+		}
+		model.addAttribute("resultMessageVO", resultMessageVO);
+		return "common/message";
+	}
+	
+	@RequestMapping("/freeDelete")
+	public String freeDelete(@ModelAttribute("free")FreeVO free, Model model) {
+		ResultMessageVO resultMessageVO = new ResultMessageVO();
+		try {
+			freeService.removeFree(free);
+			resultMessageVO.setResult(true);
+			resultMessageVO.setMessage("삭제성공");
+			resultMessageVO.setTitle("삭제");
+			resultMessageVO.setUrl("/free/freeList");
+			resultMessageVO.setUrlTitle("목록으로");
+		}catch(BizNotFoundException enf){
+			resultMessageVO.setResult(false);
+			resultMessageVO.setMessage("삭제실패 notFound");
+			resultMessageVO.setTitle("삭제");
+			resultMessageVO.setUrl("/free/freeList");
+			resultMessageVO.setUrlTitle("목록으로");
+		}catch(BizNotEffectedException ene){
+			resultMessageVO.setResult(false);
+			resultMessageVO.setMessage("삭제 실패 notEffected");
+			resultMessageVO.setTitle("삭제");
+			resultMessageVO.setUrl("/free/freeList");
+			resultMessageVO.setUrlTitle("목록으로");
+	}
+	model.addAttribute("resultMessageVO", resultMessageVO);
+	return "common/message";
+	}
+
+}

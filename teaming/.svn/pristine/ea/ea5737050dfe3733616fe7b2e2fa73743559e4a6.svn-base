@@ -1,0 +1,48 @@
+package com.moim.service.impl;
+
+import java.util.List;
+
+import javax.inject.Inject;
+
+import org.springframework.stereotype.Service;
+
+import com.moim.dao.IReplyDao;
+import com.moim.exception.BizAccessFailException;
+import com.moim.exception.BizNotFoundException;
+import com.moim.service.IReplyService;
+import com.moim.vo.ReplyVO;
+
+/**
+ * 
+ * <b> Reply_Table <b>
+ * 4-4IRF ReplyServiceImpl 참조
+ * 
+ * @author 다나
+ * @since 2021.07.14
+ */
+@Service
+public class ReplyServiceImpl implements IReplyService {
+
+	@Inject
+	IReplyDao replyDao; 
+
+	@Override
+	public List<ReplyVO> getReplyListByParent() {
+		return null;
+	}
+
+	@Override
+	public void registReply(ReplyVO reply) {
+	}
+
+	@Override
+	public void modifyReply(ReplyVO reply) throws BizNotFoundException, BizAccessFailException {
+
+	}
+
+	@Override
+	public void removeReply(ReplyVO reply) throws BizNotFoundException, BizAccessFailException {
+
+	}
+
+}

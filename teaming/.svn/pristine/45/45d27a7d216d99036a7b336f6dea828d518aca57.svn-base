@@ -1,0 +1,51 @@
+package com.moim.web;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.inject.Inject;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.moim.service.IMoimScheduleService;
+import com.moim.service.IMoimService;
+import com.moim.vo.MoimScheduleSearchVO;
+import com.moim.vo.MoimScheduleVO;
+
+/**
+ * 
+ * 일정 리스트는 RestController 사용해야 해서 따로 뺌
+ * 
+ * @author DNA
+ * @since 2021.07.31
+ */
+@RestController
+public class ScheduleListController {
+
+	private Logger logger = LoggerFactory.getLogger(this.getClass());
+	
+	@Inject
+	IMoimScheduleService scheduleService;
+	
+	@Inject
+	IMoimService moimService;
+	
+	@RequestMapping(value = "/schedule/scheduleList", produces = "application/json;charset=UTF-8" )
+	public Map<String, Object> ScheduleList(MoimScheduleSearchVO searchVO) throws Exception {
+		List<MoimScheduleVO> list = scheduleService.getScheduleList(searchVO);
+		Map<String, Object> map = new HashMap<String, Object>();
+		
+		map.put("result", true);		// Ajax가 True라면
+		map.put("data", list);			// 내용을 담음
+		map.put("count", list.size());	// 글 갯수
+		map.put("pagination", searchVO);
+		
+		logger.debug("map={}", map);
+		
+		return map;
+	}
+}

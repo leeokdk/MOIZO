@@ -1,0 +1,35 @@
+@charset "UTF-8";
+
+
+/* 드래그 색상 변경 전역으로 적용 안됨*/
+::selection {
+   background: #699bdc;
+   color: #fff;
+}
+
+
+div.container {padding-top: 2%; }
+
+h3 {margin-top: 5%;} 
+.navbar { z-index : 99; }
+
+h3 {margin-bottom: 5%;} 
+
+/* 폰트 적용 안됨 각자 이걸로 적용해야함  */
+
+
+/* a링크 밑줄 제거 */
+a {
+  text-decoration-line: none;
+}
+
+
+/* textarea 크기 조절 버튼 제거 : 현재 잘 안먹어서 각각 넣어줌 */
+textarea {resize: none;}
+
+/* table thead tr th {text-align: center;}
+
+.bottom-10 {padding-bottom: 10px;}
+
+.fifth-gray tbody tr:nth-child(5n) {background-color: #f7f7f9;}
+.fifth-primary tbody tr:nth-child(5n) {background-color: #337ab7;} */

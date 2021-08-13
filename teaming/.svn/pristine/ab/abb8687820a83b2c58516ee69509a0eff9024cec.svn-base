@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.moim.reply.dao.IReplyDao">
+
+
+	<select id="getReplyCountByParent" resultType="int"
+		parameterType="com.moim.reply.vo.ReplySearchVO">
+		SELECT count(*)
+		FROM reply_table
+		WHERE re_category= #{reCode}	<!-- 게시판 코드 공지, 자유게시판 등 -->
+		AND re_parent_no = #{reParentNo}
+
+	</select>
+
+	<select id="getReplyListByParent"
+		resultType="com.moim.reply.vo.ReplyVO"
+		parameterType="com.moim.reply.vo.ReplySearchVO">
+
+		<include refid="common.prePaging" />
+
+		SELECT
+		re_no
+		, re_code
+		, re_parent_no
+		, re_mem_id
+		, re_content
+		, re_mem_name
+		, to_char(re_reg_date,'YYYY-MM-DD') AS re_reg_date
+		, to_char(re_mod_date,'YYYY-MM-DD') AS re_mod_date
+		FROM reply_table
+		ORDER BY re_no DESC
+
+
+		<include refid="common.postPaging" />
+
+	</select>
+
+	<select id="getReply" parameterType="int"
+		resultType="com.moim.reply.vo.ReplyVO">
+		SELECT
+		re_no
+		, re_code
+		, re_parent_no
+		, re_mem_id
+		, re_content
+		, re_mem_name
+		, to_char(re_reg_date,'YYYY-MM-DD') AS re_reg_date
+		, to_char(re_mod_date,'YYYY-MM-DD') AS re_mod_date
+
+		FROM reply_table
+		WHERE re_no = #{reNo}
+
+	</select>
+
+	<update id="updateReply"
+		parameterType="com.moim.reply.vo.ReplyVO">
+
+		UPDATE reply SET re_content = #{reContent}
+		,re_mod_date = SYSDATE
+		WHERE re_no = #{reNo}
+
+	</update>
+
+	<update id="deleteReply"
+		parameterType="com.moim.reply.vo.ReplyVO">
+		DELETE FROM reply
+		WHERE re_no = #{reNo}
+
+	</update>
+
+	<update id="insertReply" parameterType="com.moim.reply.vo.ReplyVO">
+
+		
+		<selectKey resultType="int" keyProperty="re_no" order="BEFORE">
+
+			SELECT SEQ_MANAGER_NOTICE_REPLY.NEXTVAL FROM DUAL
+		</selectKey>
+
+		INSERT INTO reply (
+		re_no
+		, re_code
+		, re_parent_no
+		, re_mem_id
+		, re_mem_name
+		, re_content
+		, re_reg_date
+		, re_mod_date
+		) VALUES (
+		#{reNo}
+		, #{reCode}
+		, #{reParentNo}
+		, #{reMemId}
+		, #{reMemName}
+		, #{reContent}
+		, SYSDATE
+		, null
+		)
+
+	</update>
+</mapper>

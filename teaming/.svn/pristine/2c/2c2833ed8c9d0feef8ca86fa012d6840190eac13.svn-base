@@ -1,0 +1,295 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.moim.dao.IMoimDao">
+	
+	<select id="getMoimCountRank" parameterType="com.moim.vo.MoimSearchVO_lank" resultType="int">
+	SELECT count(*) FROM moim_table
+	WHERE 1=1
+			<if test="@org.apache.commons.lang3.StringUtils@isNotBlank(searchAge)">
+				AND moim_limit_age &lt;= #{searchAge} and moim_limit_age_end &gt;= #{searchAge}
+			</if>
+			<if test="@org.apache.commons.lang3.StringUtils@isNotBlank(searchHobby)">
+				AND hb_code = #{searchHobby}
+			</if>
+			<if test="@org.apache.commons.lang3.StringUtils@isNotBlank(searchLocationBig)">
+				AND local_big_code = #{searchLocationBig}
+			</if>
+			<if test="@org.apache.commons.lang3.StringUtils@isNotBlank(searchLocationMid)">
+				AND local_mid_code = #{searchLocationMid}
+			</if>
+			<if test="@org.apache.commons.lang3.StringUtils@isNotBlank(searchGender)">
+				AND moim_limit_gender = #{searchGender}
+			</if>
+			<if test="@org.apache.commons.lang3.StringUtils@isNotBlank(searchWord)">
+				AND moim_name LIKE '%' || #{searchWord} || '%'
+			</if>
+	</select>
+	
+	<select id="getMoimListRank" parameterType="com.moim.vo.MoimSearchVO_lank" resultType="com.moim.vo.MoimVO">
+		SELECT * FROM (
+		SELECT d.*, rownum AS rnum FROM (
+		
+			SELECT DISTINCT moim_code
+			       , moim_name
+			       , manager_id
+			       , a.hb_code
+			       , moim_del_yn
+			       , moim_introduce
+			       , moim_image
+			       , a.local_big_code
+			       , a.local_mid_code
+			       , moim_limit_gender
+			       , moim_limit_age
+			       , moim_limit_maximum
+			       , moim_limit_age_end
+			       , moim_color
+			       , moim_date
+			       , nvl((SELECT count(*) FROM user_like WHERE a.moim_code = user_like.moim_code group by moim_code),0) AS moim_like
+			       , b.hb_name AS moim_category
+			       , c.local_mid_name AS moim_local_name
+			       , c.local_big_name AS moim_big_name
+			       , (SELECT count(*) FROM user_like WHERE a.moim_code = user_like.moim_code)
+			FROM moim_table a,  hobby b, location c
+			WHERE a.hb_code = b.hb_code
+			AND a.local_mid_code = c.local_mid_code
+			AND moim_del_yn != 'Y'
+					<if test="@org.apache.commons.lang3.StringUtils@isNotBlank(searchAge)">
+						AND moim_limit_age &lt;= #{searchAge} and moim_limit_age_end &gt;= #{searchAge}
+					</if>
+					<if test="@org.apache.commons.lang3.StringUtils@isNotBlank(searchHobby)">
+						AND a.hb_code = #{searchHobby}
+					</if>
+					<if test="@org.apache.commons.lang3.StringUtils@isNotBlank(searchLocationBig)">
+						AND a.local_big_code = #{searchLocationBig}
+					</if>
+					<if test="@org.apache.commons.lang3.StringUtils@isNotBlank(searchLocationMid)">
+						AND a.local_mid_code = #{searchLocationMid}
+					</if>
+					<if test="@org.apache.commons.lang3.StringUtils@isNotBlank(searchGender)">
+						AND moim_limit_gender = #{searchGender}
+					</if>
+					<if test="@org.apache.commons.lang3.StringUtils@isNotBlank(searchWord)">
+						AND moim_name LIKE '%' || #{searchWord} || '%'
+					</if>
+			ORDER BY moim_like desc, moim_date
+			) d 
+		) e
+	where rnum between #{firstRow} and #{lastRow}
+	</select>
+
+	<select id="getMoimList" parameterType="com.moim.vo.MoimSearchVO" resultType="com.moim.vo.MoimVO">
+	SELECT * FROM (
+		SELECT d.*, rownum AS rnum FROM (
+		
+			SELECT DISTINCT moim_code
+			       , moim_name
+			       , manager_id
+			       , a.hb_code
+			       , moim_del_yn
+			       , moim_introduce
+			       , moim_image
+			       , a.local_big_code
+			       , a.local_mid_code
+			       , moim_limit_gender
+			       , moim_limit_age
+			       , moim_limit_maximum
+			       , moim_limit_age_end
+			       , moim_color
+			       , moim_date
+			       , nvl((SELECT count(*) FROM user_like WHERE a.moim_code = user_like.moim_code group by moim_code),0) AS moim_like
+			       , b.hb_name AS moim_category
+			       , c.local_mid_name AS moim_local_name
+			       , c.local_big_name AS moim_big_name
+			       , (SELECT count(*) FROM user_like WHERE a.moim_code = user_like.moim_code)
+			FROM moim_table a,  hobby b, location c
+			WHERE a.hb_code = b.hb_code
+			AND a.local_mid_code = c.local_mid_code
+			AND moim_del_yn != 'Y'
+					<if test="@org.apache.commons.lang3.StringUtils@isNotBlank(searchAge)">
+						AND moim_limit_age &lt;= #{searchAge} and moim_limit_age_end &gt;= #{searchAge}
+					</if>
+					<if test="@org.apache.commons.lang3.StringUtils@isNotBlank(searchHobby)">
+						AND a.hb_code = #{searchHobby}
+					</if>
+					<if test="@org.apache.commons.lang3.StringUtils@isNotBlank(searchLocationBig)">
+						AND a.local_big_code = #{searchLocationBig}
+					</if>
+					<if test="@org.apache.commons.lang3.StringUtils@isNotBlank(searchLocationMid)">
+						AND a.local_mid_code = #{searchLocationMid}
+					</if>
+					<if test="@org.apache.commons.lang3.StringUtils@isNotBlank(searchGender)">
+						AND moim_limit_gender = #{searchGender}
+					</if>
+					<if test="@org.apache.commons.lang3.StringUtils@isNotBlank(searchWord)">
+						AND moim_name LIKE '%' || #{searchWord} || '%'
+					</if>
+			ORDER BY moim_like desc, moim_date
+			) d 
+		) e
+	where rnum between #{firstRow} and #{lastRow}
+	</select>
+	
+	<select id="getMoim" parameterType="String" resultType="com.moim.vo.MoimVO">
+	SELECT DISTINCT moim_code
+	       , moim_name
+	       , manager_id
+	       , a.hb_code
+	       , moim_del_yn
+	       , moim_introduce
+	       , moim_image
+	       , a.local_big_code
+	       , a.local_mid_code
+	       , moim_limit_gender
+	       , moim_limit_age
+	       , moim_limit_maximum
+	       , moim_limit_age_end
+	       , moim_color
+	       , moim_date
+	       , nvl((SELECT count(*) FROM user_like WHERE a.moim_code = user_like.moim_code group by moim_code),0) AS moim_like
+	       , b.hb_name AS moim_category
+	       , c.local_mid_name AS moim_local_name
+	       , c.local_big_name AS moim_big_name
+	FROM moim_table a,  hobby b, location c
+	WHERE a.hb_code = b.hb_code
+	AND a.local_mid_code = c.local_mid_code
+	AND moim_del_yn != 'Y'
+	AND moim_code = #{moimCode}
+	ORDER BY moim_like desc, moim_date
+	</select>
+	
+	<update id="insertMoim" parameterType="com.moim.vo.MoimVO">
+		<selectKey resultType="String" keyProperty="moimCode"
+			order="BEFORE">
+			SELECT #{hbCode}||LPAD(MOIM_TABLE_SEQ.NEXTVAL, 2, '0') FROM DUAL
+		</selectKey>
+		INSERT INTO moim_table (
+			moim_code ,moim_name ,manager_id ,hb_code
+			,moim_del_yn ,moim_introduce ,moim_image
+			,local_big_code ,local_mid_code, moim_color, moim_date
+			<if test="@org.apache.commons.lang3.StringUtils@isNotBlank(moimLimitGender)">,moim_limit_gender </if>
+			<if test="@org.apache.commons.lang3.StringUtils@isNotBlank(moimLimitAge)">,moim_limit_age </if>
+			<if test="@org.apache.commons.lang3.StringUtils@isNotBlank(moimLimitMaximum)">,moim_limit_maximum </if>
+			<if test="@org.apache.commons.lang3.StringUtils@isNotBlank(moimLimitMaximum)">,moim_limit_age_end </if>
+		)VALUES(
+			#{moimCode}, 
+			#{moimName},
+			#{managerId},
+			#{hbCode},
+			'N',  
+	    	#{moimIntroduce},     
+	    	'default',     
+	    	#{localBigCode},     
+	    	#{localMidCode},
+	    	'basic',
+	    	SYSDATE
+	    	<if test="@org.apache.commons.lang3.StringUtils@isNotBlank(moimLimitGender)">,#{moimLimitGender} </if>
+			<if test="@org.apache.commons.lang3.StringUtils@isNotBlank(moimLimitAge)">,#{moimLimitAge} </if>
+			<if test="@org.apache.commons.lang3.StringUtils@isNotBlank(moimLimitMaximum)">,#{moimLimitMaximum} </if>
+			<if test="@org.apache.commons.lang3.StringUtils@isNotBlank(moimLimitMaximum)">,#{moimLimitAgeEnd} </if>
+		)
+	</update>
+	
+	<update id="updateMoim" parameterType="com.moim.vo.MoimVO">
+	UPDATE moim_table SET     
+	    moim_name = #{moimName},     
+	    hb_code = #{hbCode},     
+	    moim_introduce = #{moimIntroduce},     
+	    moim_image = #{moimImage},     
+	    local_big_code = #{localBigCode},     
+	    local_mid_code = #{localMidCode},
+	    moim_color = #{moimColor}
+	    	<if test="@org.apache.commons.lang3.StringUtils@isNotBlank(moimLimitGender)">,moim_limit_gender = #{moimLimitGender} </if>
+			<if test="@org.apache.commons.lang3.StringUtils@isNotBlank(moimLimitAge)">,moim_limit_age = #{moimLimitAge} </if>
+			<if test="@org.apache.commons.lang3.StringUtils@isNotBlank(moimLimitMaximum)">,moim_limit_maximum = #{moimLimitMaximum} </if>
+			<if test="@org.apache.commons.lang3.StringUtils@isNotBlank(moimLimitMaximum)">,moim_limit_age_end = #{moimLimitAgeEnd} </if>
+    WHERE moim_code = #{moimCode}
+	</update>
+	
+	<update id="deleteMoim" parameterType="com.moim.vo.MoimVO">
+	UPDATE moim_table SET     
+	    moim_del_yn = 'Y'
+    WHERE moim_code = #{moimCode}
+	</update>
+	
+	<select id="getMoimCount" parameterType="com.moim.vo.MoimSearchVO" resultType="int">
+	SELECT count(*) FROM moim_table
+	WHERE 1=1
+			<if test="@org.apache.commons.lang3.StringUtils@isNotBlank(searchAge)">
+				AND moim_limit_age &lt;= #{searchAge} and moim_limit_age_end &gt;= #{searchAge}
+			</if>
+			<if test="@org.apache.commons.lang3.StringUtils@isNotBlank(searchHobby)">
+				AND hb_code = #{searchHobby}
+			</if>
+			<if test="@org.apache.commons.lang3.StringUtils@isNotBlank(searchLocationBig)">
+				AND local_big_code = #{searchLocationBig}
+			</if>
+			<if test="@org.apache.commons.lang3.StringUtils@isNotBlank(searchLocationMid)">
+				AND local_mid_code = #{searchLocationMid}
+			</if>
+			<if test="@org.apache.commons.lang3.StringUtils@isNotBlank(searchGender)">
+				AND moim_limit_gender = #{searchGender}
+			</if>
+			<if test="@org.apache.commons.lang3.StringUtils@isNotBlank(searchWord)">
+				AND moim_name LIKE '%' || #{searchWord} || '%'
+			</if>
+	</select>
+	
+	<update id="updateMoimImage" parameterType="String" >
+	 UPDATE moim_table SET     
+	    moim_image = #{fileName}
+    WHERE moim_code = #{moimCode}
+    AND moim_del_yn != 'Y'
+	</update>
+	
+	<select id="getMemberList" parameterType="String" resultType="com.moim.vo.UserVO">
+		<include refid="common.prePaging"></include>
+						SELECT											
+				 		a.user_id    ,    a.user_password  ,      a.user_name   , 			
+				 		a.user_age   ,    a.user_email     ,      a.user_gender , 			
+				 		a.user_pic   ,    a.user_introduce ,      a.user_del_yn , 
+				 		a.local_big_code, a.local_mid_code, a.local_small_code  , 			
+				 		c.hb_code as user_hobby,
+				 		b.hb_name as user_hobby_nm,					
+				 		d.local_big_name as local_big_nm, 
+				 		d.local_mid_name as local_mid_nm,
+				 		d.local_small_name as local_small_nm
+				 		
+						FROM user_table a, hobby b, attention c, location d, login_table e
+						where a.user_id = c.user_id
+						and c.hb_code = b.hb_code 				
+						and a.local_big_code = d.local_big_code
+						and a.local_mid_code = d.local_mid_code
+						and a.local_small_code = d.local_small_code
+						and a.user_id = e.user_id
+						and e.moim_code = #{moimCode}
+						and e.role_name = #{roleName}
+				<if test="@org.apache.commons.lang3.StringUtils@isNotBlank(searchWord)">
+			<choose>
+				<when test='searchType == "NM"'> and a.user_name like '%' || #{searchWord} || '%'  </when>
+				<when test='searchType == "ID"'> and a.user_id like '%' || #{searchWord} || '%' </when>
+			</choose>
+		</if>  		<!-- @클래스풀네임@ 식으로 사용함. -->
+		<if test="@org.apache.commons.lang3.StringUtils@isNotBlank(searchHobby)">
+			and c.hb_code like '%' || #{searchHobby} || '%'
+		</if>  		<!-- @클래스풀네임@ 식으로 사용함. -->
+		<if test="@org.apache.commons.lang3.StringUtils@isNotBlank(searchLocationBig)">
+			AND a.local_big_code = #{searchLocationBig}
+		</if>
+		<if test="@org.apache.commons.lang3.StringUtils@isNotBlank(searchLocationMid)">
+			AND a.local_mid_code = #{searchLocationMid}
+		</if>
+		<if test="@org.apache.commons.lang3.StringUtils@isNotBlank(searchLocationMid)">
+			AND a.local_small_code = #{searchLocationSmall}
+		</if>	
+						order by user_id desc		
+		<include refid="common.postPaging"></include>		
+		order by rnum desc		
+	</select>
+	
+	<select id="getMemberCount" parameterType="String" resultType="int">
+		SELECT count(*) FROM user_table a, login_table b
+		WHERE 1=1
+		and b.moim_code = #{moimCode};
+	</select>
+	
+</mapper>

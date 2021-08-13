@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.moim.dao.IAttentionDao">
+
+<insert id="insertHobby" parameterType="com.moim.vo.AttentionVO">
+	INSERT INTO moim.attention (
+	    user_id
+	    , hb_code
+	) VALUES (
+	    #{userId}
+	    , #{hbCode}
+	)
+</insert>
+
+<update id="updateHobby" parameterType="com.moim.vo.AttentionVO">
+	UPDATE attention
+	SET
+	    hb_code = #{hbCode}
+	WHERE user_id = #{userId}
+</update>
+</mapper>

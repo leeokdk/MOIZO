@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.moim.dao.IMoimDao">
+	<select id="getMoimList" parameterType="com.moim.vo.MoimSearchVO" resultType="com.moim.vo.MoimVO">
+	SELECT    
+	    moim_code,     
+	    moim_name,     
+	    manager_id,     
+	    hb_code,     
+	    moim_del_yn,     
+	    moim_introduce,     
+	    moim_image,    
+	    local_big_code,     
+	    local_mid_code 
+    FROM moim_table
+	</select>
+	
+	<select id="getMoim" parameterType="String" resultType="com.moim.vo.MoimVO">
+	SELECT    
+	    moim_code,     
+	    moim_name,     
+	    manager_id,     
+	    hb_code,     
+	    moim_del_yn,     
+	    moim_introduce,     
+	    moim_image,    
+	    local_big_code,     
+	    local_mid_code 
+    FROM moim_table
+    WHERE moim_code = #{moimCode}
+	</select>
+	<update id="insertMoim" parameterType="com.moim.vo.MoimVO">
+		<selectKey resultType="String" keyProperty="moimCode"
+			order="BEFORE">
+			SELECT #{hbCode}||MOIM_TABLE_SEQ.NEXTVAL FROM DUAL
+		</selectKey>
+		INSERT INTO moim_table VALUES(
+			#{moimCode}, 
+			#{moimName},
+			'매니저 아이디',
+			#{hbCode},
+			'N',  
+	    	#{moimIntroduce},     
+	    	'파일업로드용. attach 설정 필요',     
+	    	#{localBigCode},     
+	    	#{localMidCode}
+		)
+	</update>
+	<update id="updateMoim" parameterType="com.moim.vo.MoimVO">
+	UPDATE moim_table SET     
+	    moim_name = #{moimName},     
+	    hb_code = #{hbCode},     
+	    moim_introduce = #{moimIntroduce},     
+	    moim_image = #{moimImage},     
+	    local_big_code = #{localBigCode},     
+	    local_mid_code = #{localMidCode}
+    WHERE moim_code = #{moimCode}
+	</update>
+	<update id="deleteMoim" parameterType="com.moim.vo.MoimVO">
+	UPDATE moim_table SET     
+	    moim_del_yn = 'Y',
+    WHERE moim_code = #{moimCode}
+	</update>
+	<select id="getMoimCount" parameterType="com.moim.vo.MoimSearchVO" resultType="int">
+	SELECT count(*) FROM moim_table
+	WHERE 1=1
+	</select>
+</mapper>

@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.moim.dao.ILoginDao">
+
+<insert id="insertUserRole" parameterType="com.moim.vo.LoginVO">
+		INSERT INTO login_table (
+		    user_id
+		    , role_name
+		    , user_password
+		    , user_name
+		    , moim_code
+		    , user_pic
+		) VALUES(	
+			#{userId},						
+			#{roleName},
+			#{userPassword},
+			#{userName},
+			#{moimCode}		,
+			#{userPic}
+		)				
+</insert>
+
+<update id="updateRole" parameterType="com.moim.vo.LoginVO">
+	UPDATE login_table
+SET
+    user_pic = #{userPic}
+WHERE user_id = #{userId}
+      AND user_name = #{userName}
+      AND user_password = #{userPassword}
+</update>
+
+<delete id="deleteLogin" parameterType="com.moim.vo.LoginVO">
+DELETE FROM login_table
+WHERE user_id = #{userId}
+</delete>
+
+<delete id="deleteRole" parameterType="com.moim.vo.LoginVO">
+DELETE FROM login_table
+WHERE user_id = #{userId}
+      AND role_name = #{roleName}
+      AND moim_code = #{moimCode}
+</delete>
+
+<select id="getUserRole" parameterType="String" resultType="String">
+	select role_name
+	from login_table
+	where user_id = #{userId}
+</select>
+
+<select id="getUser" parameterType="String" resultType="com.moim.vo.LoginVO">
+	select user_id, role_name, user_password, user_name, moim_code, user_pic
+	from login_table
+	where user_id = #{userId}	
+</select>
+
+</mapper>

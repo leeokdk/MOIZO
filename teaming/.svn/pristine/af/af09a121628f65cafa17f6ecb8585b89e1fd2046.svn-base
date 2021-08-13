@@ -1,0 +1,45 @@
+package com.moim.service.impl;
+
+import java.util.List;
+
+import org.springframework.stereotype.Service;
+
+import com.moim.exception.BizDuplicateKeyException;
+import com.moim.exception.BizNotEffectedException;
+import com.moim.exception.BizNotFoundException;
+import com.moim.service.IMoimService;
+import com.moim.vo.MoimSearchVO;
+import com.moim.vo.MoimVO;
+/**
+ * @author 준오
+ * @since 2021.07.14 
+ */
+@Service
+public class MoimServiceImpl implements IMoimService {
+
+	@Override
+	public List<MoimVO> getMoimList(MoimSearchVO moimSearchVO) {
+		return null;
+	}
+
+	@Override
+	public void registMoim(MoimVO Moim) throws BizDuplicateKeyException, BizNotEffectedException {
+		
+	}
+
+	@Override
+	public MoimVO getMoim(String moimCode) throws BizNotFoundException {
+		return null;
+	}
+
+	@Override
+	public void modifyMoim(MoimVO Moim) throws BizNotEffectedException, BizNotFoundException {
+		
+	}
+
+	@Override
+	public void removeMoim(MoimVO Moim) throws BizNotEffectedException, BizNotFoundException {
+		
+	}
+
+}

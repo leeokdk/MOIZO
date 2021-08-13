@@ -1,0 +1,29 @@
+package com.moim.service;
+
+import java.util.List;
+
+import com.moim.exception.BizNotEffectedException;
+import com.moim.exception.BizNotFoundException;
+import com.moim.vo.MoimScheduleVO;
+/**
+ * 
+ * @author DNA
+ * @since 2021.07.28
+ */
+public interface IMoimScheduleService {
+
+	public List<MoimScheduleVO> getScheduleList();
+	
+	public MoimScheduleVO getSchedule(int mScheduleNo) throws BizNotFoundException;
+
+	public void increaseEnter(int mScheduleNo) throws BizNotEffectedException;
+
+	public void decreaseEnter(int mScheduleNo) throws BizNotEffectedException;
+	
+	public void modifySchedule(MoimScheduleVO moimScheduleVO) throws BizNotFoundException, BizNotEffectedException;
+
+	public void removeSchedule(MoimScheduleVO moimScheduleVO) throws BizNotFoundException, BizNotEffectedException;
+
+	public void registSchedule(MoimScheduleVO moimScheduleVO) throws BizNotEffectedException;
+
+}

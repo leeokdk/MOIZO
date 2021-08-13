@@ -1,0 +1,107 @@
+package com.moim.web;
+
+import javax.inject.Inject;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.support.SessionStatus;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import com.moim.common.valid.Step;
+import com.moim.dao.IHobbyDao;
+import com.moim.dao.ILocationDao;
+import com.moim.exception.BizNotEffectedException;
+import com.moim.exception.BizNotFoundException;
+import com.moim.service.ILoginService;
+import com.moim.service.IUserService;
+import com.moim.vo.LocationVO;
+import com.moim.vo.UserVO;
+
+@Controller
+@RequestMapping("/user")
+public class UserController {
+	
+	@Inject
+	IUserService userService;
+	
+	@Inject
+	ILoginService loginService;
+	
+	@Inject
+	ILocationDao locationDao;
+
+	@Inject
+	IHobbyDao hobbyDao;
+	
+	/*			로그인 후 개인정보 확인용 컨트롤러	 */	
+	@RequestMapping("/find")
+	public String findPassword(HttpServletRequest req, HttpServletResponse resp, RedirectAttributes redirectAttributes) {
+		HttpSession session = req.getSession();
+		session.removeAttribute("USER_INFO");
+		redirectAttributes.addFlashAttribute("succesLogout", "success");
+		return "redirect:/";
+	}
+	
+	@RequestMapping("/info")
+	public String getMyInfo(@RequestParam("userId") String userId, Model model) {
+		try {
+			UserVO user = userService.getUser(userId);
+			LocationVO location = (LocationVO) locationDao.getUserLocation(user);
+			model.addAttribute("userLocation", location);
+			model.addAttribute("user", user);
+		} catch (BizNotFoundException e) {
+			e.printStackTrace();
+		}
+		
+		return "user/info";
+	}
+	
+	@GetMapping("/edit")
+	public String userEdit(@RequestParam ("userId") String userId, Model model) {
+		UserVO user = null;
+		try {
+			user = userService.getUser(userId);
+		} catch (BizNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		model.addAttribute("user", user);
+		return "user/edit";
+	}
+	
+	@PostMapping("/modify")
+	public String userEdit2(@ModelAttribute("user") @Validated({ Step.class }) UserVO user, BindingResult errors,
+			Model model, @RequestParam("upload_profile") MultipartFile file, RedirectAttributes redirectAttributes) {
+		return null;
+	}
+	
+	@RequestMapping("/deleteUser")
+	public String userDelete(HttpServletRequest req, RedirectAttributes redirectAttributes, @RequestParam("userId") String userId) {
+		UserVO user;
+		try {
+			user = userService.getUser(userId);
+			userService.removeUser(user);
+		} catch (BizNotFoundException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		} catch (BizNotEffectedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		HttpSession session = req.getSession();
+		session.removeAttribute("USER_INFO");
+		redirectAttributes.addFlashAttribute("succesDelete", "success");
+		return "redirect:/";
+	}
+}

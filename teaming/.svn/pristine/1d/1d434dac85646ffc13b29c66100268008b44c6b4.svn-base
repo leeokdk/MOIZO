@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.moim.dao.IFreeDao">
+
+<sql id="search">
+<if test="@org.apache.commons.lang3.StringUtils@isNotBlank(searchWord)"><!--@클래스풀네임@메소드이름(파라미터) 형식-->
+		<choose>
+			<when test='searchType == "T"'>AND free_title LIKE '%' || #{searchWord} || '%' </when>
+			<when test='searchType == "W"'>AND free_writer LIKE '%' || #{searchWord} || '%'</when>
+			<when test='searchType == "C"'>AND free_content LIKE '%' || #{searchWord} || '%'</when>
+		</choose>	
+	</if>
+</sql>
+
+
+<select id="getFreeCount" parameterType="com.moim.vo.FreeSearchVO" resultType="int">
+	SELECT count(*) FROM free_table
+	WHERE 1 = 1
+	<include refid="search" />
+</select>
+
+
+<select id="getFreeList" parameterType="com.moim.vo.FreeSearchVO" resultType="com.moim.vo.FreeVO">
+	<include refid="common.prePaging" />
+	SELECT
+	a.moim_code, free_no, free_title, free_writer, free_content, free_hit, 
+	free_reg_date, free_mod_date, free_del_yn
+	FROM free_table a, moim_table b
+	WHERE a.moim_code = b.moim_code
+	<include refid="search" />
+	ORDER BY free_no desc
+	<include refid="common.postPaging" />
+</select>
+
+
+<select id="getFree" parameterType="int" resultType="com.moim.vo.FreeVO">
+	SELECT
+	moim_code, free_no, free_title, free_writer, free_content, free_hit, 
+	free_reg_date, free_mod_date, free_del_yn
+	FROM free_table
+	WHERE free_no = #{freeNo}
+</select>
+
+
+<update id="increaseHit" parameterType="int">
+	UPDATE free_table SET
+	free_hit = free_hit + 1
+	WHERE free_no = #{freeNo}
+</update>
+
+
+<update id="insertFree" parameterType="com.moim.vo.FreeVO">
+	INSERT INTO free_table (
+		moim_code, free_no, free_title, free_writer, free_content, free_hit, 
+		free_reg_date, free_mod_date, free_del_yn
+	) VALUES (
+		#{moimCode}, free_table_seq.nextval, #{freeTitle}, #{freeWriter}, #{freeContent}, 0,
+		sysdate, null, 'N'
+	)
+</update>
+
+
+<update id="updateFree" parameterType="com.moim.vo.FreeVO">
+	UPDATE free_table 
+	SET	free_title = #{freeTitle},
+		free_writer = #{freeWriter},
+		free_content = #{freeContent},
+		free_mod_date = sysdate
+	WHERE free_no = #{freeNo}
+</update>
+
+
+</mapper>
+
+
+
+
+
+

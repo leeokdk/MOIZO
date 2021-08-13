@@ -1,0 +1,28 @@
+package com.moim.dao;
+
+import java.util.List;
+
+import org.apache.ibatis.annotations.Mapper;
+
+import com.moim.vo.LocationVO;
+
+@Mapper
+public interface ILocationDao {
+	/**
+	 * commCode 참고함<br>
+	 * parentCode = 상위코드. (ex: 중분류 찾을땐 대분류코드, 소분류 찾을땐 중분류 코드)
+	 * @param parentCode
+	 * @return List
+	 * @author ok
+	 * @since 2021.07.14
+	 */
+	public List<LocationVO> getLocationByParent(String parentCode);
+	
+	/**
+	 * 
+	 * @author ok
+	 * @since 2021.07.18
+	 */
+	public List<LocationVO> getBigLocation();
+	
+}

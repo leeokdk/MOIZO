@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.moim.dao.IUserLikeDao">
+	<insert id="insertUserLike" parameterType="com.moim.vo.UserLikeVO">
+	INSERT INTO user_like (
+	    user_id
+	    , moim_code
+	) VALUES (
+    #{userId}
+    , #{moimCode}
+	)
+	</insert>
+	
+	<delete id="deleteUserLike" parameterType="com.moim.vo.UserLikeVO">
+	DELETE FROM user_like
+	WHERE user_id = #{userId}
+      AND moim_code = #{moimCode}
+	</delete>
+	
+	<select id="getUserLike" parameterType="String" resultType="com.moim.vo.UserLikeVO">
+		SELECT user_id, moim_code
+		FROM user_like
+		WHERE user_id = #{session_id}
+	</select>
+	
+	<select id="getUserLikeCount" parameterType="String" resultType="int">
+		SELECT count(user_id) AS moim_like_count
+		FROM user_like
+		WHERE moim_code = #{moimCode}
+		GROUP BY moim_code
+	</select>
+	
+	<select id="searchUserLike" parameterType="com.moim.vo.UserLikeVO" resultType="int">
+		SELECT count(*)
+		FROM user_like
+		WHERE user_id = #{userId}
+		AND moim_code = #{moimCode}
+	</select>
+	
+</mapper>

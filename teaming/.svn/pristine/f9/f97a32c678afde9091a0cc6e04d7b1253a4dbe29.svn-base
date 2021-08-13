@@ -1,0 +1,58 @@
+package com.moim.service.impl;
+
+import java.util.List;
+
+import javax.inject.Inject;
+
+import org.springframework.stereotype.Service;
+
+import com.moim.dao.IAdminNoticeDao;
+import com.moim.exception.BizNotEffectedException;
+import com.moim.exception.BizNotFoundException;
+import com.moim.service.IAdminNoticeService;
+import com.moim.vo.AdminNoticeSearchVO;
+import com.moim.vo.AdminNoticeVO;
+import com.moim.vo.ManagerNoticeVO;
+
+/**
+ * 
+ * @author ok
+ *
+ */
+@Service
+public class AdminNoticeServiceImpl implements IAdminNoticeService {
+	
+	@Inject
+	IAdminNoticeDao adminNoticeDao; 
+
+	@Override
+	public List<AdminNoticeVO> getBoardList(AdminNoticeSearchVO adminNoticeSearchVO) {
+		return null;
+	}
+
+	@Override
+	public ManagerNoticeVO getBoard(int aNoticeNo) throws BizNotFoundException {
+		return null;
+	}
+
+	@Override
+	public int increseHit(int aNoticeNo) throws BizNotEffectedException {
+		return 0;
+	}
+
+	@Override
+	public int modifyBoard(AdminNoticeVO adminNoticeVO) throws BizNotFoundException, BizNotEffectedException {
+		return 0;
+	}
+
+	@Override
+	public int removeBoard(AdminNoticeVO adminNoticeVO) throws BizNotFoundException, BizNotEffectedException {
+		return 0;
+	}
+
+	@Override
+	public int registBoard(AdminNoticeVO adminNoticeVO) throws BizNotEffectedException {
+		return 0;
+	}
+
+}

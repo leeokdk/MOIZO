@@ -1,0 +1,51 @@
+package com.moim.service.impl;
+
+import java.util.List;
+
+import org.springframework.stereotype.Service;
+
+import com.moim.exception.BizNotEffectedException;
+import com.moim.exception.BizNotFoundException;
+import com.moim.exception.BizPasswordNotMatchedException;
+import com.moim.service.IFreeService;
+import com.moim.vo.FreeSearchVO;
+import com.moim.vo.FreeVO;
+/**
+ * @author 준오
+ * @since 2021.07.14 
+ */
+//@Service
+public class FreeServiceImpl implements IFreeService {
+
+	@Override
+	public List<FreeVO> getFreeList(FreeSearchVO freeSearchVO) {
+		return null;
+	}
+
+	@Override
+	public FreeVO getFree(int freeNo) throws BizNotFoundException {
+		return null;
+	}
+
+	@Override
+	public void increaseHit(int boNo) throws BizNotEffectedException {
+	}
+
+
+
+	@Override
+	public void registFree(FreeVO free) throws BizNotEffectedException {
+		
+	}
+
+	@Override
+	public void modifyFree(FreeVO free) throws BizNotFoundException, BizNotEffectedException {
+		
+	}
+
+	@Override
+	public void removeFree(FreeVO free) throws BizNotFoundException, BizNotEffectedException {
+		
+	}
+
+}

@@ -1,0 +1,85 @@
+package com.moim.vo;
+
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
+
+public class MoimVO {
+	private String moimCode;                /* 모임코드*/
+	private String moimName;                /* 모임이름*/
+	private String managerId;               /* 모임장아이디*/
+	private String hbCode;                  /* 모임카테고리*/
+	private String moimLike;                /* 모임좋아요*/
+	private String moimDelYn;               /* 모임삭제여부*/
+	private String moimIntroduce;           /* 모임소개*/
+	private String moimImage;               /* 모임사진*/
+	private String localBigCode;            /* 지역 대분류 코드*/
+	private String localMidCode;            /* 지역 중분류 코드*/
+	
+	@Override
+	public String toString() {
+		return ToStringBuilder.reflectionToString(this, ToStringStyle.MULTI_LINE_STYLE);
+	}
+	
+	public String getMoimCode() {
+		return moimCode;
+	}
+	public void setMoimCode(String moimCode) {
+		this.moimCode = moimCode;
+	}
+	public String getMoimName() {
+		return moimName;
+	}
+	public void setMoimName(String moimName) {
+		this.moimName = moimName;
+	}
+	public String getManagerId() {
+		return managerId;
+	}
+	public void setManagerId(String managerId) {
+		this.managerId = managerId;
+	}
+	public String getHbCode() {
+		return hbCode;
+	}
+	public void setHbCode(String hbCode) {
+		this.hbCode = hbCode;
+	}
+	public String getMoimLike() {
+		return moimLike;
+	}
+	public void setMoimLike(String moimLike) {
+		this.moimLike = moimLike;
+	}
+	public String getMoimDelYn() {
+		return moimDelYn;
+	}
+	public void setMoimDelYn(String moimDelYn) {
+		this.moimDelYn = moimDelYn;
+	}
+	public String getMoimIntroduce() {
+		return moimIntroduce;
+	}
+	public void setMoimIntroduce(String moimIntroduce) {
+		this.moimIntroduce = moimIntroduce;
+	}
+	public String getMoimImage() {
+		return moimImage;
+	}
+	public void setMoimImage(String moimImage) {
+		this.moimImage = moimImage;
+	}
+	public String getLocalBigCode() {
+		return localBigCode;
+	}
+	public void setLocalBigCode(String localBigCode) {
+		this.localBigCode = localBigCode;
+	}
+	public String getLocalMidCode() {
+		return localMidCode;
+	}
+	public void setLocalMidCode(String localMidCode) {
+		this.localMidCode = localMidCode;
+	}
+	
+	
+}

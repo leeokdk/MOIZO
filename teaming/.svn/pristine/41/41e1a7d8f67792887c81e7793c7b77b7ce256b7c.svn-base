@@ -1,0 +1,26 @@
+package com.moim.dao;
+
+import java.util.List;
+
+import org.apache.ibatis.annotations.Mapper;
+
+import com.moim.vo.FreeSearchVO;
+import com.moim.vo.FreeVO;
+/**
+ * @author 준오
+ * @since 2021.07.14 
+ */
+@Mapper
+public interface IFreeDao {
+	public List<FreeVO> getFreeList(FreeSearchVO memSearchVO);
+
+	public FreeVO getFree(String memId);
+
+	public int insertFree(FreeVO Free);
+
+	public int updateFree(FreeVO Free);
+
+	public int deleteFree(FreeVO Free);
+
+	public int getFreeCount(FreeSearchVO memSearchVO);
+}

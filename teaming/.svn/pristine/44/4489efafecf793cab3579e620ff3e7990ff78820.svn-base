@@ -1,0 +1,87 @@
+package com.moim.web;
+
+import java.net.URLEncoder;
+
+import javax.inject.Inject;
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+
+import com.moim.common.CookieUtil;
+import com.moim.exception.BizNotFoundException;
+import com.moim.service.ILoginService;
+import com.moim.vo.LoginVO;
+
+/**
+ * 
+ * @author 준오
+ *
+ */
+@Controller
+@RequestMapping("/login")
+public class LoginController {
+
+//	@Inject
+	ILoginService loginService;
+	
+	@GetMapping("/login.co.kr")
+	public String loginGet() throws Exception{
+		return "login/login";
+	}
+	
+	@PostMapping("/login.co.kr")
+	public String loginPost(HttpServletRequest req, HttpServletResponse resp) throws Exception{
+		String id = req.getParameter("userId");
+		String pw = req.getParameter("userPass");
+		String save_id = req.getParameter("rememberMe");
+
+		// 체크박스가 체크 되어 있지 않는 경우
+		if (save_id == null) { 
+			CookieUtil cookieUtil = new CookieUtil(req);
+			// 저장된 쿠키가 있다면 삭제하기
+			if (cookieUtil.exists("SAVE_ID")) {
+				Cookie cookie = CookieUtil.createCookie("SAVE_ID", id, "/", 0);
+				resp.addCookie(cookie);
+			}
+			save_id = "";
+		}
+		// 체크박스가 체크 되어 있는 경우
+		if (save_id.equals("Y")) {
+			Cookie cookie = CookieUtil.createCookie("SAVE_ID", id, "/", 60*60*24*7);
+			resp.addCookie(cookie);
+		}
+		if (id == null || id.equals("") || pw == null || pw.equals("")) {
+			// 아이디와 패스워드를 입력 안 했을 경우
+			return "redirect:/login/login.wow?msg=" + URLEncoder.encode("아이디 혹은 패스워드를 입력하지 않았습니다.", "utf-8");
+		}
+		try {
+			LoginVO user = loginService.getUser(id);
+			HttpSession session = req.getSession();
+			session.setAttribute("USER_INFO", user);	// 세션에 세팅되는 유저 : ID, ROLE, PASSWORD
+			session.setMaxInactiveInterval(1800);
+			
+			String prePage = (String) session.getAttribute("PREPAGE");
+			session.removeAttribute("PREPAGE");			// 주소값을 저장했으니 session다시 삭제 / 삭제안하면 로그인 할때마다 해당 페이지로 감
+			if(prePage != null) {
+				return "redirect:" + prePage;
+			}
+			return "redirect:/";
+		} catch (BizNotFoundException e) {
+			return "redirect:/login/login.wow?msg=" + URLEncoder.encode("아이디와 패스워드를 확인해주세요.", "utf-8");
+		}
+	}
+
+	@RequestMapping("/logout.co.kr")
+	public String logout(HttpServletRequest req, HttpServletResponse resp) throws Exception {
+		HttpSession session = req.getSession();
+		session.removeAttribute("USER_INFO");
+		return "redirect:/";
+	}
+	
+}

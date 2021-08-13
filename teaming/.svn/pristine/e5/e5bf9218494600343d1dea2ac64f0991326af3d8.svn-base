@@ -1,0 +1,27 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+
+<!DOCTYPE html>
+<%request.setCharacterEncoding("UTF-8"); %>
+<html>
+<head>
+<%@include  file="/WEB-INF/inc/header.jsp" %>
+<meta charset="UTF-8">
+<title>title</title>
+</head>
+<body>
+
+<!-- Tab을 위해서는 introduce를 따로 빼야함 -->
+<!-- //TODO : 내용 꾸밀 간격줘야함   -->
+
+<div class="container">
+	<%-- ${moimIntroduce } --%>
+	
+<div>
+모임을 소개하는 내용이 담겨있습니다.
+</div>
+
+</div>
+</body>
+</html>

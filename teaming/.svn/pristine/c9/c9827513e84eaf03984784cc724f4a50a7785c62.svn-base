@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.moim.dao.IMoimMapDao">
+	
+	<select id="getMoimMapList" resultType="com.moim.vo.MoimMapVO">
+		SELECT DISTINCT a.moim_name AS moim_name
+		       , b.local_big_name||' '||b.local_mid_name AS moim_adress
+		FROM moim_table a, location b
+		WHERE a.local_big_code = b.local_big_code
+		AND a.local_mid_code=b.local_mid_code
+		AND a.moim_del_yn != 'Y'
+	</select>
+
+</mapper>

@@ -1,0 +1,22 @@
+package com.moim.dao;
+
+import org.apache.ibatis.annotations.Mapper;
+import com.moim.exception.BizNotEffectedException;
+import com.moim.exception.BizNotFoundException;
+import com.moim.exception.BizPasswordNotMatchedException;
+import com.moim.vo.LoginVO;
+
+/**
+ * 새로 생성함.
+ * @author 준오
+ * @since 2021.07.16
+ */
+
+//@Mapper
+public interface ILoginDao {
+	public String getUserRole(String id) throws BizNotFoundException;
+
+	public int insertUserRole(LoginVO login) throws BizNotFoundException, BizNotEffectedException;
+	
+	public LoginVO getUser(String id) throws BizNotFoundException;
+}
